@@ -171,6 +171,13 @@ procedure TFrmInicial.FormCreate(Sender: TObject);
 var
   vFoto: TStream;
 begin
+{$IFDEF ANDROID}
+  PermissaoCamera := JStringToString(TJManifest_permission.JavaClass.CAMERA);
+  PermissaoReadStorage := JStringToString
+    (TJManifest_permission.JavaClass.READ_EXTERNAL_STORAGE);
+  PermissaoWriteStorage := JStringToString
+    (TJManifest_permission.JavaClass.WRITE_EXTERNAL_STORAGE);
+{$ENDIF}
   dm.FDQLogin.Close;
   dm.FDQLogin.Open();
   if dm.FDQLogin.RecordCount > 0 then

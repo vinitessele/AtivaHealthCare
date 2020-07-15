@@ -244,13 +244,7 @@ end;
 
 procedure TFrmMenu.FormActivate(Sender: TObject);
 begin
-{$IFDEF ANDROID}
-  PermissaoCamera := JStringToString(TJManifest_permission.JavaClass.CAMERA);
-  PermissaoReadStorage := JStringToString
-    (TJManifest_permission.JavaClass.READ_EXTERNAL_STORAGE);
-  PermissaoWriteStorage := JStringToString
-    (TJManifest_permission.JavaClass.WRITE_EXTERNAL_STORAGE);
-{$ENDIF}
+
 end;
 
 procedure TFrmMenu.FormShow(Sender: TObject);
