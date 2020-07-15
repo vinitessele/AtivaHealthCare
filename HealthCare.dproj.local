@@ -8,16 +8,18 @@
     <Transaction>2020/07/13 00:44:10.000.416,=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit2.pas</Transaction>
     <Transaction>2020/07/13 00:44:40.000.432,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit2.fmx=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\USplash.fmx</Transaction>
     <Transaction>2020/07/13 00:44:40.000.432,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit2.pas=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\USplash.pas</Transaction>
-    <Transaction>2020/07/13 16:18:07.535,=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.pas</Transaction>
-    <Transaction>2020/07/13 16:18:25.519,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\UDM.dfm=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.dfm</Transaction>
-    <Transaction>2020/07/13 16:18:25.519,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\UDM.pas=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.pas</Transaction>
-    <Transaction>2020/07/13 18:29:44.002,=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.pas</Transaction>
-    <Transaction>2020/07/13 18:30:40.764,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\UMenu.pas=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.pas</Transaction>
-    <Transaction>2020/07/13 18:30:40.764,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\UMenu.fmx=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.fmx</Transaction>
+    <Transaction>2020/07/13 16:18:07.000.535,=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.pas</Transaction>
+    <Transaction>2020/07/13 16:18:25.000.519,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\UDM.dfm=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.dfm</Transaction>
+    <Transaction>2020/07/13 16:18:25.000.519,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\UDM.pas=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.pas</Transaction>
+    <Transaction>2020/07/13 18:29:44.000.002,=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.pas</Transaction>
+    <Transaction>2020/07/13 18:30:40.000.764,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\UMenu.fmx=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.fmx</Transaction>
+    <Transaction>2020/07/13 18:30:40.000.764,C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\UMenu.pas=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Unit1.pas</Transaction>
+    <Transaction>2020/07/14 15:42:06.000.281,=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\uCComunicacao.pas</Transaction>
   </Transactions>
 	<ActiveMobileDevice>
-		<NoProfile iOSSimulator="iPhone5"/>
-	</ActiveMobileDevice>  <ProjectSortOrder AutoSort="0" SortType="0">
+		<NoProfile iOSSimulator="iPhone5" Android="RQ8M30LNNQB"/>
+	</ActiveMobileDevice>
+	<ProjectSortOrder AutoSort="0" SortType="0">
     <File Path="android-support-v4.dex.jar"/>
     <File Path="cloud-messaging.dex.jar"/>
     <File Path="com-google-android-gms.play-services-ads-base.17.2.0.dex.jar"/>
@@ -82,5 +84,6 @@
     <File Path="UMenu.fmx"/>
     <File Path="USplash.pas"/>
     <File Path="USplash.fmx"/>
+    <File Path="uCComunicacao.pas"/>
   </ProjectSortOrder>
 </BorlandProject>
