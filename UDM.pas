@@ -46,6 +46,14 @@ type
     FDQLogintp_login: TIntegerField;
     FDQLoginimg_usuario: TBlobField;
     FDQLoginhash: TStringField;
+    FDQLoginsexo: TStringField;
+    FDQEspecialidade: TFDQuery;
+    FDQEspecialidadeid: TFDAutoIncField;
+    FDQEspecialidadedescricao: TStringField;
+    FDQProfissionalEspecialidade: TFDQuery;
+    FDQProfissionalEspecialidadeid: TFDAutoIncField;
+    FDQProfissionalEspecialidadeid_especialidade: TIntegerField;
+    FDQProfissionalEspecialidadeid_login: TIntegerField;
     procedure FDConnection1BeforeConnect(Sender: TObject);
     procedure FDConnection1AfterConnect(Sender: TObject);
   private
@@ -71,6 +79,14 @@ begin
     ' create table IF NOT EXISTS config( ' + //
     ' campo varchar(30),' + //
     ' valor varchar(30))';
+  FDConnection1.ExecSQL(strSQL);
+
+  strSQL := EmptyStr;
+  strSQL := //
+    ' create table IF NOT EXISTS especialidade( ' + //
+    ' id integer not null primary key autoincrement, ' + //
+    ' descricao varchar(40), ' + //
+    ' Server char(1))';
   FDConnection1.ExecSQL(strSQL);
 
   strSQL := EmptyStr;
@@ -105,11 +121,22 @@ begin
     ' sabadoHoras varchar(30),                      ' + //
     ' email varchar(60),                            ' + //
     ' senha varchar(10),                            ' + //
-    ' tp_login integer,                            ' + //
-    ' img_usuario blob,                            ' + //
+    ' tp_login integer,                             ' + //
+    ' img_usuario blob,                             ' + //
+    ' sexo char(1),                                 ' + //
+    ' Server char(1),                               ' + //
+    ' cad_aprovado char(1),                         ' + //
     ' hash char(32))';
   FDConnection1.ExecSQL(strSQL);
+
   strSQL := EmptyStr;
+  strSQL := //
+    ' create table IF NOT EXISTS ProfissionalEspecialidade (  ' + //
+    ' id integer not null primary key autoincrement,  ' + //
+    ' id_especialidade integer,   ' + //
+    ' id_login integer, ' + //
+    ' Server char(1))  ';
+  FDConnection1.ExecSQL(strSQL);
 
   DM.FDQConfig.Active := false;
   DM.FDQConfig.SQL.Clear;
@@ -133,6 +160,8 @@ begin
 
   // ativa todas Fdquerys
   DM.FDQLogin.Active := true;
+  DM.FDQEspecialidade.Active  := true;
+  DM.FDQProfissionalEspecialidade.Active  := true;
 end;
 
 procedure TDM.FDConnection1BeforeConnect(Sender: TObject);

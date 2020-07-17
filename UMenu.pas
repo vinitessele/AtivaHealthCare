@@ -10,7 +10,10 @@ uses
   FMX.Layouts, FMX.TabControl, System.Actions, FMX.ActnList, FMX.StdActns,
   FMX.MediaLibrary.Actions, FMX.ScrollBox, FMX.Memo, REST.Types,
   System.permissions,
-  REST.Client, Data.Bind.Components, Data.Bind.ObjectScope, web.HTTPApp;
+  REST.Client, Data.Bind.Components, Data.Bind.ObjectScope, web.HTTPApp,
+  FMX.ListBox, System.Rtti, System.Bindings.Outputs, FMX.Bind.Editors,
+  Data.Bind.EngExt, FMX.Bind.DBEngExt, Data.Bind.DBScope, FMX.ListView.Types,
+  FMX.ListView.Appearances, FMX.ListView.Adapters.Base, FMX.ListView;
 
 type
   TFrmMenu = class(TForm)
@@ -79,7 +82,7 @@ type
     Label4: TLabel;
     Edt_Cep: TEdit;
     Line1: TLine;
-    LayoutCelular: TLayout;
+    LayoutGrupo: TLayout;
     edt_Celular: TEdit;
     Line4: TLine;
     Label6: TLabel;
@@ -108,7 +111,7 @@ type
     LayoutObservacao: TLayout;
     Line10: TLine;
     Label13: TLabel;
-    Layout2: TLayout;
+    LayoutDIsponibilidade: TLayout;
     Label14: TLabel;
     CheckBoxSegunda: TCheckBox;
     CheckBoxTerca: TCheckBox;
@@ -140,6 +143,15 @@ type
     Layout4: TLayout;
     Label15: TLabel;
     VertScrollBox4: TVertScrollBox;
+    LayoutSexo: TLayout;
+    LayoutCelular: TLayout;
+    Label16: TLabel;
+    ComboBox1: TComboBox;
+    LayoutEspecialidade: TLayout;
+    Line11: TLine;
+    Label17: TLabel;
+    BindingsList1: TBindingsList;
+    VertScrollBox5Especialidade: TVertScrollBox;
     procedure RectMeusDadosClick(Sender: TObject);
     procedure img_addClick(Sender: TObject);
     procedure ActionPhotoLibraryDidFinishTaking(Image: TBitmap);
@@ -162,6 +174,9 @@ type
     procedure OcultaBotoes;
     procedure CalculaIdade;
   private
+    procedure CarregarEspecialidades;
+    procedure atualizaEspecialidade;
+    procedure InsertEspecialidade(Sender: TObject);
 
     { Private declarations }
 {$IFDEF ANDROID}
@@ -171,6 +186,7 @@ type
       const AGrantResults: TArray<TPermissionStatus>);
     procedure DisplayMessageLibrary(Sender: TObject;
       const APermissions: TArray<string>; const APostProc: TProc);
+    procedure CarregarEspecialidades;
 {$ENDIF}
   public
     procedure FormActivate(Sender: TObject);
@@ -247,6 +263,44 @@ begin
 
 end;
 
+procedure TFrmMenu.atualizaEspecialidade;
+begin
+  dm.FDQEspecialidade.Close;
+  dm.FDQEspecialidade.Open;
+  dm.FDQEspecialidade.First;
+end;
+
+procedure TFrmMenu.CarregarEspecialidades;
+var
+  check: TCheckBox;
+begin
+  atualizaEspecialidade;
+
+  while not dm.FDQEspecialidade.Eof do
+  begin
+    check := TCheckBox.Create(VertScrollBox5Especialidade);
+    with check do
+    begin
+      Align := TAlignLayout.Top;
+      Text := dm.FDQEspecialidadedescricao.AsString;
+      TextSettings.FontColor := $EF700680;
+      Margins.Top := 5;
+      Margins.Left := 5;
+      TagString := dm.FDQEspecialidadeid.AsString;
+      Name := 'check' + dm.FDQEspecialidadeid.AsString;
+      OnClick := InsertEspecialidade;
+    end;
+    VertScrollBox5Especialidade.AddObject(check);
+    dm.FDQEspecialidade.Next;
+  end;
+
+end;
+
+procedure TFrmMenu.InsertEspecialidade(Sender: TObject);
+begin
+  ShowMessage(TCheckBox(Sender).TagString);
+end;
+
 procedure TFrmMenu.FormShow(Sender: TObject);
 var
   vFoto: TStream;
@@ -254,14 +308,14 @@ begin
   TabAction1.Execute;
   CalculaIdade;
   SelecionaAba(layout_aba1);
-  LabelNomeUser.Text := DM.FDQLoginnome.AsString;
-  vFoto := DM.FDQLogin.CreateBlobStream
-    (DM.FDQLogin.FieldByName('img_usuario'), bmRead);
-  if not DM.FDQLoginimg_usuario.IsNull then
+  LabelNomeUser.Text := dm.FDQLoginnome.AsString;
+  vFoto := dm.FDQLogin.CreateBlobStream
+    (dm.FDQLogin.FieldByName('img_usuario'), bmRead);
+  if not dm.FDQLoginimg_usuario.IsNull then
   begin
     CircleFoto.Fill.Bitmap.Bitmap.LoadFromStream(vFoto);
   end;
-
+  CarregarEspecialidades;
   AddItem(1, 3.3, 'Maria', 'enfermeiro(a)', 'Toledo - PR');
   AddItem(2, 4, 'Alex', 'Auxiliar de enfermagem', 'Toledo - PR');
   AddItem(3, 2, 'Flavia', 'cuidador(a)', 'Toledo - PR');
@@ -300,69 +354,70 @@ procedure TFrmMenu.img_cancelarClick(Sender: TObject);
 begin
   OcultaBotoes;
   TabAction1.Execute;
-  DM.FDQLogin.Cancel;
-  DM.FDConnection1.RollbackRetaining;
+  dm.FDQLogin.Cancel;
+  dm.FDConnection1.RollbackRetaining;
 end;
 
 procedure TFrmMenu.img_salvarClick(Sender: TObject);
 begin
-  DM.FDQLogin.Edit;
-  DM.FDQLoginnome.AsString := Edt_Nome.Text;
-  DM.FDQLogincpf.AsString := Edt_Cpf.Text;
-  DM.FDQLogincep.AsString := Edt_Cep.Text;
-  DM.FDQLogincelular.AsString := edt_Celular.Text;
-  DM.FDQLoginendreco.AsString := Edt_end.Text;
-  DM.FDQLogincomplemento.AsString := Edt_complemento.Text;
-  DM.FDQLogincidade.AsString := Edt_cidade.Text;
-  DM.FDQLoginuf.AsString := edt_uf.Text;
-  DM.FDQLoginbairro.AsString := Edt_bairro.Text;
-  DM.FDQLogindt_nascimento.AsString := edt_nascimento.Text;
-  DM.FDQLoginobservacao.AsString := MemoObservacao.Text;
-  DM.FDQLogindomingoHoras.AsString := EdtDomingo.Text;
-  DM.FDQLoginsegundaHoras.AsString := EdtSegunda.Text;
-  DM.FDQLogintercaHoras.AsString := EdtTerca.Text;
-  DM.FDQLoginquartaHoras.AsString := EdtQuarta.Text;
-  DM.FDQLoginquintaHoras.AsString := EdtQuinta.Text;
-  DM.FDQLoginsextaHoras.AsString := EdtSexta.Text;
-  DM.FDQLoginsabadoHoras.AsString := EdtSabado.Text;
+  dm.FDQLogin.Edit;
+  dm.FDQLoginnome.AsString := Edt_Nome.Text;
+  dm.FDQLogincpf.AsString := Edt_Cpf.Text;
+  dm.FDQLogincep.AsString := Edt_Cep.Text;
+  dm.FDQLogincelular.AsString := edt_Celular.Text;
+  dm.FDQLoginendreco.AsString := Edt_end.Text;
+  dm.FDQLogincomplemento.AsString := Edt_complemento.Text;
+  dm.FDQLogincidade.AsString := Edt_cidade.Text;
+  dm.FDQLoginuf.AsString := edt_uf.Text;
+  dm.FDQLoginbairro.AsString := Edt_bairro.Text;
+  dm.FDQLogindt_nascimento.AsString := edt_nascimento.Text;
+  dm.FDQLoginobservacao.AsString := MemoObservacao.Text;
+  dm.FDQLogindomingoHoras.AsString := EdtDomingo.Text;
+  dm.FDQLoginsegundaHoras.AsString := EdtSegunda.Text;
+  dm.FDQLogintercaHoras.AsString := EdtTerca.Text;
+  dm.FDQLoginquartaHoras.AsString := EdtQuarta.Text;
+  dm.FDQLoginquintaHoras.AsString := EdtQuinta.Text;
+  dm.FDQLoginsextaHoras.AsString := EdtSexta.Text;
+  dm.FDQLoginsabadoHoras.AsString := EdtSabado.Text;
+  dm.FDQLoginsexo.AsString := ComboBox1.Items[ComboBox1.ItemIndex];
 
   if CheckBoxDomingo.IsChecked then
-    DM.FDQLogindomingo.AsString := 'X'
+    dm.FDQLogindomingo.AsString := 'X'
   else
-    DM.FDQLogindomingo.AsString := EmptyStr;
+    dm.FDQLogindomingo.AsString := EmptyStr;
 
   if CheckBoxSegunda.IsChecked then
-    DM.FDQLoginsegunda.AsString := 'X'
+    dm.FDQLoginsegunda.AsString := 'X'
   else
-    DM.FDQLoginsegunda.AsString := EmptyStr;
+    dm.FDQLoginsegunda.AsString := EmptyStr;
 
   if CheckBoxTerca.IsChecked then
-    DM.FDQLoginterca.AsString := 'X'
+    dm.FDQLoginterca.AsString := 'X'
   else
-    DM.FDQLoginterca.AsString := EmptyStr;
+    dm.FDQLoginterca.AsString := EmptyStr;
 
   if CheckBoxQuarta.IsChecked then
-    DM.FDQLoginquarta.AsString := 'X'
+    dm.FDQLoginquarta.AsString := 'X'
   else
-    DM.FDQLoginquarta.AsString := EmptyStr;
+    dm.FDQLoginquarta.AsString := EmptyStr;
 
   if CheckBoxQuinta.IsChecked then
-    DM.FDQLoginquinta.AsString := 'X'
+    dm.FDQLoginquinta.AsString := 'X'
   else
-    DM.FDQLoginquinta.AsString := EmptyStr;
+    dm.FDQLoginquinta.AsString := EmptyStr;
 
   if CheckBoxSexta.IsChecked then
-    DM.FDQLoginsexta.AsString := 'X'
+    dm.FDQLoginsexta.AsString := 'X'
   else
-    DM.FDQLoginsexta.AsString := EmptyStr;
+    dm.FDQLoginsexta.AsString := EmptyStr;
 
   if CheckBoxSabado.IsChecked then
-    DM.FDQLoginsabado.AsString := 'X'
+    dm.FDQLoginsabado.AsString := 'X'
   else
-    DM.FDQLoginsabado.AsString := EmptyStr;
+    dm.FDQLoginsabado.AsString := EmptyStr;
 
-  DM.FDQLogin.Post;
-  DM.FDConnection1.CommitRetaining;
+  dm.FDQLogin.Post;
+  dm.FDConnection1.CommitRetaining;
   OcultaBotoes;
   TabAction1.Execute;
 end;
@@ -442,8 +497,8 @@ end;
 procedure TFrmMenu.RectMeusDadosClick(Sender: TObject);
 begin
   TabAction2.Execute();
-  DM.FDQLogin.Close;
-  DM.FDQLogin.Open();
+  dm.FDQLogin.Close;
+  dm.FDQLogin.Open();
   CarregarMeusDados;
 end;
 
@@ -461,6 +516,7 @@ var
   I: integer;
   pontos: integer;
 begin
+
   // fundo
   rect := TRectangle.Create(VertScrollBox3);
   with rect do
@@ -583,6 +639,7 @@ begin
     Position.Y := 15;
     rect_barra.AddObject(img);
   end;
+
   // Cidade
   lbl := TLabel.Create(rect);
   with lbl do
@@ -614,6 +671,7 @@ begin
     HitTest := false;
     rect.AddObject(rect_icone);
   end;
+
   // Label do icone...
   lbl := TLabel.Create(rect);
   with lbl do
@@ -638,59 +696,64 @@ procedure TFrmMenu.CarregarMeusDados;
 begin
   img_salvar.Visible := true;
   img_cancelar.Visible := true;
+
   // 1 contratante
-  if DM.FDQLogintp_login.AsInteger = 1 then
+  if dm.FDQLogintp_login.AsInteger = 1 then
   begin
     Label13.Text := 'Observação - Cuidados Necessários';
+    LayoutEspecialidade.Visible := false;
   end
   else // 2 profissional
-    if DM.FDQLogintp_login.AsInteger = 2 then
+    if dm.FDQLogintp_login.AsInteger = 2 then
     begin
       Label13.Text := 'Observação - Procedimentos oferecidos';
+      LayoutEspecialidade.Visible := true;
     end;
-  Edt_Nome.Text := DM.FDQLoginnome.AsString;
-  Edt_Cpf.Text := DM.FDQLogincpf.AsString;
-  Edt_Cep.Text := DM.FDQLogincep.AsString;
-  edt_Celular.Text := DM.FDQLogincelular.AsString;
-  Edt_end.Text := DM.FDQLoginendreco.AsString;
-  Edt_complemento.Text := DM.FDQLoginendreco.AsString;
-  Edt_cidade.Text := DM.FDQLogincidade.AsString;
-  edt_uf.Text := DM.FDQLoginuf.AsString;
-  Edt_bairro.Text := DM.FDQLoginbairro.AsString;
-  edt_nascimento.Text := DM.FDQLogindt_nascimento.AsString;
-  MemoObservacao.Text := DM.FDQLoginobservacao.AsString;
-  EdtDomingo.Text := DM.FDQLogindomingoHoras.AsString;
-  EdtSegunda.Text := DM.FDQLoginsegundaHoras.AsString;
-  EdtTerca.Text := DM.FDQLogintercaHoras.AsString;
-  EdtQuarta.Text := DM.FDQLoginquartaHoras.AsString;
-  EdtQuinta.Text := DM.FDQLoginquintaHoras.AsString;
-  EdtSexta.Text := DM.FDQLoginsextaHoras.AsString;
-  EdtSabado.Text := DM.FDQLoginsabadoHoras.AsString;
-  if DM.FDQLogindomingo.AsString = 'X' then
+
+  Edt_Nome.Text := dm.FDQLoginnome.AsString;
+  Edt_Cpf.Text := dm.FDQLogincpf.AsString;
+  Edt_Cep.Text := dm.FDQLogincep.AsString;
+  edt_Celular.Text := dm.FDQLogincelular.AsString;
+  Edt_end.Text := dm.FDQLoginendreco.AsString;
+  Edt_complemento.Text := dm.FDQLoginendreco.AsString;
+  Edt_cidade.Text := dm.FDQLogincidade.AsString;
+  edt_uf.Text := dm.FDQLoginuf.AsString;
+  Edt_bairro.Text := dm.FDQLoginbairro.AsString;
+  edt_nascimento.Text := dm.FDQLogindt_nascimento.AsString;
+  MemoObservacao.Text := dm.FDQLoginobservacao.AsString;
+  EdtDomingo.Text := dm.FDQLogindomingoHoras.AsString;
+  EdtSegunda.Text := dm.FDQLoginsegundaHoras.AsString;
+  EdtTerca.Text := dm.FDQLogintercaHoras.AsString;
+  EdtQuarta.Text := dm.FDQLoginquartaHoras.AsString;
+  EdtQuinta.Text := dm.FDQLoginquintaHoras.AsString;
+  EdtSexta.Text := dm.FDQLoginsextaHoras.AsString;
+  EdtSabado.Text := dm.FDQLoginsabadoHoras.AsString;
+
+  if dm.FDQLogindomingo.AsString = 'X' then
     CheckBoxDomingo.IsChecked
   else
     CheckBoxDomingo.IsChecked := false;
-  if DM.FDQLoginsegunda.AsString = 'X' then
+  if dm.FDQLoginsegunda.AsString = 'X' then
     CheckBoxSegunda.IsChecked
   else
     CheckBoxSegunda.IsChecked := false;
-  if DM.FDQLoginterca.AsString = 'X' then
+  if dm.FDQLoginterca.AsString = 'X' then
     CheckBoxTerca.IsChecked
   else
     CheckBoxTerca.IsChecked := false;
-  if DM.FDQLoginquarta.AsString = 'X' then
+  if dm.FDQLoginquarta.AsString = 'X' then
     CheckBoxQuarta.IsChecked
   else
     CheckBoxQuarta.IsChecked := false;
-  if DM.FDQLoginquinta.AsString = 'X' then
+  if dm.FDQLoginquinta.AsString = 'X' then
     CheckBoxQuinta.IsChecked
   else
     CheckBoxQuinta.IsChecked := false;
-  if DM.FDQLoginsexta.AsString = 'X' then
+  if dm.FDQLoginsexta.AsString = 'X' then
     CheckBoxSexta.IsChecked
   else
     CheckBoxSexta.IsChecked := false;
-  if DM.FDQLoginsabado.AsString = 'X' then
+  if dm.FDQLoginsabado.AsString = 'X' then
     CheckBoxSabado.IsChecked
   else
     CheckBoxSabado.IsChecked := false;

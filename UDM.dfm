@@ -17,15 +17,17 @@ object DM: TDM
     Top = 32
   end
   object FDQLogin: TFDQuery
+    Active = True
     Connection = FDConnection1
     SQL.Strings = (
       'select * from login')
     Left = 32
-    Top = 192
+    Top = 224
     object FDQLoginid: TFDAutoIncField
       FieldName = 'id'
       Origin = 'id'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
     end
     object FDQLoginnome: TStringField
       FieldName = 'nome'
@@ -177,6 +179,12 @@ object DM: TDM
       FieldName = 'img_usuario'
       Origin = 'img_usuario'
     end
+    object FDQLoginsexo: TStringField
+      FieldName = 'sexo'
+      Origin = 'sexo'
+      FixedChar = True
+      Size = 1
+    end
     object FDQLoginhash: TStringField
       FieldName = 'hash'
       Origin = 'hash'
@@ -197,5 +205,42 @@ object DM: TDM
         ParamType = ptInput
         Value = '1'
       end>
+  end
+  object FDQEspecialidade: TFDQuery
+    Connection = FDConnection1
+    SQL.Strings = (
+      'select * from especialidade')
+    Left = 32
+    Top = 160
+    object FDQEspecialidadeid: TFDAutoIncField
+      FieldName = 'id'
+      Origin = 'id'
+      ProviderFlags = [pfInWhere, pfInKey]
+    end
+    object FDQEspecialidadedescricao: TStringField
+      FieldName = 'descricao'
+      Origin = 'descricao'
+      Size = 40
+    end
+  end
+  object FDQProfissionalEspecialidade: TFDQuery
+    Connection = FDConnection1
+    SQL.Strings = (
+      'select * from ProfissionalEspecialidade ')
+    Left = 40
+    Top = 296
+    object FDQProfissionalEspecialidadeid: TFDAutoIncField
+      FieldName = 'id'
+      Origin = 'id'
+      ProviderFlags = [pfInWhere, pfInKey]
+    end
+    object FDQProfissionalEspecialidadeid_especialidade: TIntegerField
+      FieldName = 'id_especialidade'
+      Origin = 'id_especialidade'
+    end
+    object FDQProfissionalEspecialidadeid_login: TIntegerField
+      FieldName = 'id_login'
+      Origin = 'id_login'
+    end
   end
 end
