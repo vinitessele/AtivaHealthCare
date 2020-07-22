@@ -6,8 +6,7 @@ uses
   UInicial in 'UInicial.pas' {FrmInicial},
   USplash in 'USplash.pas' {FrmSplash},
   UDM in 'UDM.pas' {DM: TDataModule},
-  UMenu in 'UMenu.pas' {FrmMenu},
-  uCComunicacao in 'uCComunicacao.pas';
+  UMenu in 'UMenu.pas' {FrmMenu};
 
 {$R *.res}
 

@@ -8,7 +8,9 @@ uses
   FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.SQLite,
   FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs, FireDAC.FMXUI.Wait, Data.DB,
   FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf,
-  FireDAC.DApt, FireDAC.Comp.DataSet, IOUtils;
+  FireDAC.DApt, FireDAC.Comp.DataSet, IOUtils, REST.Types, REST.Client,
+  Data.Bind.Components, Data.Bind.ObjectScope, FireDAC.Comp.BatchMove,
+  FireDAC.Comp.BatchMove.JSON, FireDAC.Stan.StorageJSON;
 
 type
   TDM = class(TDataModule)
@@ -54,6 +56,30 @@ type
     FDQProfissionalEspecialidadeid: TFDAutoIncField;
     FDQProfissionalEspecialidadeid_especialidade: TIntegerField;
     FDQProfissionalEspecialidadeid_login: TIntegerField;
+    FDQValidaEspecialidade: TFDQuery;
+    FDQValidaEspecialidadeid: TFDAutoIncField;
+    FDQValidaEspecialidadeid_especialidade: TIntegerField;
+    FDQValidaEspecialidadeid_login: TIntegerField;
+    FDQValidaEspecialidadeServer: TStringField;
+    FDQLoginServer: TStringField;
+    FDQLogincad_aprovado: TStringField;
+    FDQEspecialidadeServer: TStringField;
+    FDQProfissionalEspecialidadeServer: TStringField;
+    RESTClientTipoPessoa: TRESTClient;
+    RESTRequestTipoPessoa: TRESTRequest;
+    RESTResponseTipoPessoa: TRESTResponse;
+    RESTClientPostPessoa: TRESTClient;
+    RESTRequestPostPessoa: TRESTRequest;
+    RESTResponsePostPessoa: TRESTResponse;
+    RESTClientEspecialidade: TRESTClient;
+    RESTRequestEspecialidade: TRESTRequest;
+    RESTResponseEspecialidade: TRESTResponse;
+    FDQEspecialidadeid_server: TIntegerField;
+    FDQPEspecialidade: TFDQuery;
+    FDAutoIncField1: TFDAutoIncField;
+    IntegerField1: TIntegerField;
+    IntegerField2: TIntegerField;
+    StringField1: TStringField;
     procedure FDConnection1BeforeConnect(Sender: TObject);
     procedure FDConnection1AfterConnect(Sender: TObject);
   private
@@ -85,6 +111,7 @@ begin
   strSQL := //
     ' create table IF NOT EXISTS especialidade( ' + //
     ' id integer not null primary key autoincrement, ' + //
+    ' id_server integer, ' + //
     ' descricao varchar(40), ' + //
     ' Server char(1))';
   FDConnection1.ExecSQL(strSQL);
@@ -93,7 +120,8 @@ begin
   // tp_login = 1 Contratante = 2 Profissional
   strSQL := //
     ' create table IF NOT EXISTS login(   ' + //
-    ' id integer not null primary key autoincrement,' + //
+    ' id integer not null primary key autoincrement, ' + //
+    ' id_server integer,                             ' + //
     ' nome varchar(40),                              ' + //
     ' cpf varchar(11),                               ' + //
     ' dt_nascimento date (10),                       ' + //
@@ -126,6 +154,7 @@ begin
     ' sexo char(1),                                 ' + //
     ' Server char(1),                               ' + //
     ' cad_aprovado char(1),                         ' + //
+    ' avaliacao integer,                            ' + //
     ' hash char(32))';
   FDConnection1.ExecSQL(strSQL);
 
@@ -133,16 +162,29 @@ begin
   strSQL := //
     ' create table IF NOT EXISTS ProfissionalEspecialidade (  ' + //
     ' id integer not null primary key autoincrement,  ' + //
+    ' id_server integer,' + //
     ' id_especialidade integer,   ' + //
     ' id_login integer, ' + //
     ' Server char(1))  ';
   FDConnection1.ExecSQL(strSQL);
 
-  DM.FDQConfig.Active := false;
-  DM.FDQConfig.SQL.Clear;
-  DM.FDQConfig.SQL.Add('select * from config where campo = ''versao''  ');
-  DM.FDQConfig.Open();
-  versao := DM.FDQConfig.FieldByName('valor').AsString;
+  strSQL := EmptyStr;
+  strSQL := //
+    ' create table IF NOT EXISTS favoritos( ' + //
+    ' id integer not null primary key autoincrement,  ' + //
+    ' id_server integer, ' + //
+    ' nome varchar(40), ' + //
+    ' cpf varchar(11), ' + //
+    ' cidade varchar(60),  ' + //
+    ' uf char(2))';
+
+  FDConnection1.ExecSQL(strSQL);
+
+  FDQConfig.Active := false;
+  FDQConfig.SQL.Clear;
+  FDQConfig.SQL.Add('select * from config where campo = ''versao''  ');
+  FDQConfig.Open();
+  versao := FDQConfig.FieldByName('valor').AsString;
   // atualiza versao
   if versao = '1.0' then
   begin
@@ -150,18 +192,19 @@ begin
     // adiciona os campos
     // DM.FDConnection1.ExecSQL('alter table config add a integer');
 
-    DM.FDQConfig.Active := false;
-    DM.FDQConfig.SQL.Clear;
-    DM.FDQConfig.SQL.Add
+    FDQConfig.Active := false;
+    FDQConfig.SQL.Clear;
+    FDQConfig.SQL.Add
       ('update config set valor =:valor where campo = ''versao''');
-    DM.FDQConfig.ParamByName('valor').Value := versao;
-    DM.FDQConfig.ExecSQL;
+    FDQConfig.ParamByName('valor').Value := versao;
+    FDQConfig.ExecSQL;
   end;
 
   // ativa todas Fdquerys
-  DM.FDQLogin.Active := true;
-  DM.FDQEspecialidade.Active  := true;
-  DM.FDQProfissionalEspecialidade.Active  := true;
+  FDQLogin.Active := true;
+  FDQEspecialidade.Active := true;
+  FDQProfissionalEspecialidade.Active := true;;
+  FDQValidaEspecialidade.Active := true
 end;
 
 procedure TDM.FDConnection1BeforeConnect(Sender: TObject);

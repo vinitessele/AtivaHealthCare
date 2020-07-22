@@ -235,9 +235,6 @@ Coordinates=1117,10,56,51
 [Line2]
 Coordinates=1867,918,41,33
 
-[Label15]
-Coordinates=1042,782,52,51
-
 [Image1]
 Coordinates=10,850,49,51
 
@@ -370,9 +367,6 @@ Coordinates=1604,10,75,51
 [Label9]
 Coordinates=1224,782,46,51
 
-[RectHistorico]
-Coordinates=320,918,81,33
-
 [CheckBoxDomingo]
 Coordinates=1980,10,109,51
 
@@ -415,4 +409,10 @@ Coordinates=125,373,82,33
 
 [DM.FDQProfissionalEspecialidade]
 Coordinates=231,152,182,105
+
+[LabelProfissionais2]
+Coordinates=1042,782,52,51
+
+[RectFavoritos]
+Coordinates=320,918,81,33
 
