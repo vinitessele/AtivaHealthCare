@@ -1,418 +1,473 @@
 ﻿[LayoutCidade]
-Coordinates=320,1010,82,33
+Coordinates=2202,1184,94,36
 
 [Label14]
-Coordinates=2114,10,52,51
+Coordinates=84,1116,60,58
 
 [EdtSexta]
-Coordinates=902,850,58,51
+Coordinates=2572,1026,67,58
 
 [img_aba2]
-Coordinates=932,10,61,51
+Coordinates=313,1184,71,58
 
 [EdtQuinta]
-Coordinates=1765,782,63,51
+Coordinates=287,1116,72,58
 
 [img_pulso]
-Coordinates=754,782,65,51
+Coordinates=2071,1116,73,58
 
 [EdtSegunda]
-Coordinates=659,782,74,51
+Coordinates=2354,1026,85,58
 
 [Line10]
-Coordinates=257,1010,46,33
+Coordinates=2306,1184,53,36
 
 [Label11]
-Coordinates=1372,10,52,51
+Coordinates=1749,1116,60,58
 
 [LayoutDIsponibilidade]
-Coordinates=105,1010,124,33
+Coordinates=1122,1252,142,36
 
 [RESTResponse1]
-Coordinates=116,10,96,285
+Coordinates=344,10,113,344
 
 [layout_aba1]
-Coordinates=10,1010,73,33
+Coordinates=1637,1184,85,36
 
 [EdtSabado]
-Coordinates=1598,850,68,51
+Coordinates=667,1184,78,58
 
 [img_ball]
-Coordinates=1692,782,56,51
+Coordinates=997,1026,63,58
 
 [btnMenu]
-Coordinates=1066,850,57,51
+Coordinates=2154,1116,64,58
 
 [Label1]
-Coordinates=776,850,46,51
+Coordinates=846,1184,53,58
 
 [LayoutNome]
-Coordinates=2170,964,76,33
+Coordinates=1694,1252,87,36
 
 [Label4]
-Coordinates=1629,782,46,51
+Coordinates=2448,1116,53,58
 
 [img_aba1]
-Coordinates=1931,782,61,51
+Coordinates=1054,1116,71,58
 
 [AnimationPulso]
-Coordinates=984,276,92,33
+Coordinates=984,276,104,36
 
 [MemoObservacao]
-Coordinates=1887,850,103,51
+Coordinates=10,1184,119,58
 
 [img_aba1_sel]
-Coordinates=1287,782,81,51
+Coordinates=1534,1026,94,58
 
 [Line8]
-Coordinates=2114,964,41,33
+Coordinates=537,1298,46,36
 
 [VertScrollBox3]
-Coordinates=2004,964,88,33
+Coordinates=427,1298,100,36
 
 [AnimationPulsoW]
-Coordinates=984,441,102,33
+Coordinates=984,441,116,36
 
 [Label8]
-Coordinates=586,850,46,51
+Coordinates=154,1116,53,58
 
 [LayoutCompEnd1]
-Coordinates=1877,964,102,33
+Coordinates=1488,1252,117,36
 
 [Edt_Cpf]
-Coordinates=2086,850,53,51
+Coordinates=466,1184,61,58
 
 [LayoutEnd]
-Coordinates=1791,964,67,33
+Coordinates=10,1252,76,36
 
 [img_cancelar]
-Coordinates=1140,850,80,51
+Coordinates=722,1116,91,58
 
 [EdtTerca]
-Coordinates=1191,10,58,51
+Coordinates=977,1116,67,58
 
 [Line4]
-Coordinates=1735,964,41,33
+Coordinates=2064,1252,46,36
 
 [LabelIdade]
-Coordinates=1442,10,68,51
+Coordinates=1070,1026,78,58
 
 [Label3]
-Coordinates=1535,850,46,51
+Coordinates=2037,1026,53,58
 
 [img_aba3]
-Coordinates=1454,850,61,51
+Coordinates=1385,1116,71,58
 
 [rect_busca]
-Coordinates=1648,964,68,33
+Coordinates=340,1298,77,36
 
 [lbl_titulo]
-Coordinates=1241,850,57,51
+Coordinates=1725,1026,63,58
 
 [TabItem4]
-Coordinates=1569,964,59,33
+Coordinates=1615,1252,69,36
 
 [Line3]
-Coordinates=1513,964,41,33
+Coordinates=2479,1184,46,36
 
 [Line1]
-Coordinates=1457,964,41,33
+Coordinates=153,1298,46,36
 
 [LayoutBairro]
-Coordinates=1359,964,78,33
+Coordinates=1966,1252,88,36
 
 [LayoutCPF]
-Coordinates=1270,964,68,33
+Coordinates=593,1298,79,36
 
 [TabItem1]
-Coordinates=1191,964,59,33
+Coordinates=1831,1184,69,36
 
 [img_aba2_sel]
-Coordinates=828,10,81,51
+Coordinates=209,1184,94,58
 
 [LabelNomeUser]
-Coordinates=132,782,92,51
+Coordinates=2237,1026,107,58
 
 [CheckBoxSegunda]
-Coordinates=319,782,108,51
+Coordinates=2592,1116,124,58
 
 [img_cancel_busca]
-Coordinates=1786,10,105,51
+Coordinates=1819,1116,121,58
 
 [img_aba3_sel]
-Coordinates=1268,10,81,51
+Coordinates=1430,1026,94,58
 
 [Edt_complemento]
-Coordinates=77,850,103,51
+Coordinates=2649,1026,118,58
 
 [CheckBoxSexta]
-Coordinates=1771,850,92,51
+Coordinates=1269,1116,106,58
 
 [TabAction2]
-Coordinates=570,767,70,33
+Coordinates=570,767,80,36
 
 [TabItem3]
-Coordinates=1112,964,59,33
+Coordinates=1791,1252,69,36
 
 [EdtQuarta]
-Coordinates=1546,782,64,51
+Coordinates=1466,1116,73,58
 
 [Layout4]
-Coordinates=1042,964,53,33
+Coordinates=798,1252,60,36
 
 [VertScrollBox2]
-Coordinates=932,964,88,33
+Coordinates=2369,1184,100,36
 
 [LayoutGrupo]
-Coordinates=833,964,79,33
+Coordinates=1732,1184,89,36
 
 [rect_toolbar]
-Coordinates=740,964,73,33
+Coordinates=2378,1252,83,36
 
 [Edt_end]
-Coordinates=970,782,54,51
+Coordinates=394,1184,62,58
 
 [CircleFoto]
-Coordinates=657,964,65,33
+Coordinates=96,1252,73,36
 
 [Label5]
-Coordinates=837,782,46,51
-
-[Layout1]
-Coordinates=587,964,53,33
+Coordinates=2449,1026,53,58
 
 [Label12]
-Coordinates=1384,850,52,51
+Coordinates=139,1184,60,58
 
 [AnimationBall]
-Coordinates=1139,56,83,33
+Coordinates=1139,56,94,36
 
 [layout_aba3]
-Coordinates=492,964,73,33
+Coordinates=179,1252,85,36
 
 [RectMeusDados]
-Coordinates=373,964,94,33
+Coordinates=2738,1252,109,36
 
 [Line6]
-Coordinates=317,964,41,33
+Coordinates=2719,1184,46,36
 
 [LayoutNascimento]
-Coordinates=186,964,106,33
+Coordinates=209,1298,121,36
 
 [Line7]
-Coordinates=130,964,41,33
+Coordinates=1274,1252,46,36
 
 [CheckBoxQuarta]
-Coordinates=10,782,97,51
+Coordinates=1119,1184,112,58
 
 [TabAction1]
-Coordinates=1139,386,70,33
+Coordinates=1139,386,80,36
 
 [img_aba4_sel]
-Coordinates=1013,10,81,51
+Coordinates=369,1116,94,58
 
 [LayoutCompEnd]
-Coordinates=10,964,96,33
+Coordinates=434,1252,110,36
 
 [LayoutCEP]
-Coordinates=2128,918,69,33
+Coordinates=2630,1184,79,36
 
 [img_aba4]
-Coordinates=205,850,61,51
+Coordinates=2511,1116,71,58
 
 [TabControl1]
-Coordinates=2033,918,74,33
+Coordinates=2535,1184,85,36
 
 [Edt_bairro]
-Coordinates=1847,782,65,51
+Coordinates=473,1116,74,58
 
 [VertScrollBox1]
-Coordinates=1923,918,88,33
+Coordinates=610,1252,100,36
 
 [img_add]
-Coordinates=1117,10,56,51
+Coordinates=10,1116,64,58
 
 [Line2]
-Coordinates=1867,918,41,33
+Coordinates=2042,1184,46,36
 
 [Image1]
-Coordinates=10,850,49,51
+Coordinates=1247,1026,57,58
 
 [Layout3]
-Coordinates=1797,918,53,33
+Coordinates=868,1252,60,36
 
 [img_salvar]
-Coordinates=1699,10,68,51
+Coordinates=1638,1026,77,58
 
 [Edt_Nome]
-Coordinates=1686,850,65,51
+Coordinates=2726,1116,75,58
 
 [LayoutMenuTopo]
-Coordinates=1673,918,100,33
+Coordinates=2614,1252,114,36
 
 [CircleFotoCadastro]
-Coordinates=1537,918,109,33
+Coordinates=2775,1184,126,36
 
 [edt_busca]
-Coordinates=2101,782,65,51
+Coordinates=893,1116,74,58
 
 [edt_uf]
-Coordinates=1391,782,45,51
+Coordinates=2512,1026,50,58
 
 [Line9]
-Coordinates=1481,918,41,33
+Coordinates=554,1252,46,36
 
 [edt_nascimento]
-Coordinates=544,782,92,51
+Coordinates=1004,1184,105,58
 
 [StyleBook1]
-Coordinates=1001,841,70,33
+Coordinates=1001,841,80,36
 
 [layout_aba4]
-Coordinates=1386,918,73,33
+Coordinates=938,1252,85,36
 
 [img_favorito]
-Coordinates=1451,782,76,51
+Coordinates=909,1184,85,58
 
 [Edt_Cep]
-Coordinates=1530,10,56,51
+Coordinates=2100,1026,64,58
 
 [RESTRequest1]
-Coordinates=616,10,88,87
+Coordinates=1680,870,103,102
 
 [VertScrollBox4]
-Coordinates=1276,918,88,33
+Coordinates=682,1298,100,36
 
 [img_busca]
-Coordinates=979,850,68,51
+Coordinates=2298,1116,77,58
 
 [RESTClient1]
-Coordinates=729,10,76,69
+Coordinates=2207,870,89,80
 
 [Label7]
-Coordinates=402,850,46,51
+Coordinates=2174,1026,53,58
 
 [Line5]
-Coordinates=1220,918,41,33
+Coordinates=378,1252,46,36
 
 [RoundRect1]
-Coordinates=1124,918,74,33
+Coordinates=1870,1252,86,36
 
 [CheckBoxQuinta]
-Coordinates=465,850,97,51
+Coordinates=1950,1116,111,58
 
 [edt_Celular]
-Coordinates=453,782,70,51
+Coordinates=755,1184,81,58
 
 [Label6]
-Coordinates=1917,10,46,51
+Coordinates=2811,1116,53,58
 
 [LayoutFoto]
-Coordinates=1035,918,70,33
+Coordinates=1033,1252,79,36
 
 [CheckBoxSabado]
-Coordinates=649,850,101,51
+Coordinates=1910,1026,117,58
 
 [Label2]
-Coordinates=839,850,46,51
+Coordinates=2385,1116,53,58
 
 [MultiView1]
-Coordinates=948,918,67,33
+Coordinates=2120,1252,77,36
 
 [LayoutComplemento]
-Coordinates=805,918,116,33
+Coordinates=2471,1252,133,36
 
 [layout_aba2]
-Coordinates=710,918,73,33
+Coordinates=1330,1252,85,36
 
 [TabAction4]
-Coordinates=319,841,70,33
+Coordinates=319,841,80,36
 
 [ActionList1]
-Coordinates=240,841,70,33
+Coordinates=240,841,78,36
 
 [AnimationBusca]
-Coordinates=131,841,95,33
+Coordinates=131,841,107,36
 
 [CheckBoxTerca]
-Coordinates=286,850,92,51
+Coordinates=1314,1026,106,58
 
 [LayoutObservacao]
-Coordinates=578,918,107,33
+Coordinates=1910,1184,122,36
 
 [TabAction3]
-Coordinates=1303,56,70,33
+Coordinates=1303,56,80,36
 
 [Label13]
-Coordinates=1314,850,52,51
+Coordinates=823,1116,60,58
 
 [Label10]
-Coordinates=2016,850,52,51
+Coordinates=217,1116,60,58
 
 [rect_tabs]
-Coordinates=500,918,60,33
+Coordinates=720,1252,68,36
 
 [TabItem2]
-Coordinates=421,918,59,33
+Coordinates=2207,1252,69,36
 
 [ActionPhotoLibrary]
-Coordinates=1303,221,110,33
+Coordinates=1303,221,124,36
 
 [Edt_cidade]
-Coordinates=2012,782,69,51
+Coordinates=1158,1026,79,58
 
 [EdtDomingo]
-Coordinates=1604,10,75,51
+Coordinates=627,1116,85,58
 
 [Label9]
-Coordinates=1224,782,46,51
+Coordinates=1549,1116,53,58
 
 [CheckBoxDomingo]
-Coordinates=1980,10,109,51
-
-[LayoutEspecialidade]
-Coordinates=177,918,116,33
+Coordinates=1135,1116,124,58
 
 [Label16]
-Coordinates=900,782,52,51
-
-[Line11]
-Coordinates=114,918,46,33
+Coordinates=2228,1116,60,58
 
 [ComboBox1]
-Coordinates=239,10,84,123
+Coordinates=2514,10,101,146
+Visible=True
 
 [LayoutCelular]
-Coordinates=10,918,83,33
-
-[Label17]
-Coordinates=249,782,52,51
+Coordinates=274,1252,94,36
 
 [DM.FDQEspecialidade]
-Coordinates=393,450,123,87
+Coordinates=2625,10,145,146
 
 [LayoutSexo]
-Coordinates=2157,850,72,33
-
-[DM.FDQLogin]
-Coordinates=10,10,82,627
+Coordinates=2286,1252,82,36
 
 [DM.FDQConfig]
-Coordinates=1112,782,87,51
+Coordinates=1798,1026,102,58
 
 []
-Coordinates=111,314,52,51
+Coordinates=10,1298,133,36
 Visible=True
 
 [BindingsList1]
-Coordinates=125,373,82,33
-
-[DM.FDQProfissionalEspecialidade]
-Coordinates=231,152,182,105
+Coordinates=125,373,91,36
 
 [LabelProfissionais2]
-Coordinates=1042,782,52,51
+Coordinates=1612,1116,127,58
 
 [RectFavoritos]
-Coordinates=320,918,81,33
+Coordinates=2098,1184,94,36
+
+[LabelProfissionais]
+Coordinates=537,1184,120,58
+
+[DM.RESTRequestTipoPessoa]
+Coordinates=835,870,187,102
+
+[DM.RESTRequestEspecialidade]
+Coordinates=1793,870,200,102
+
+[DM.RESTResponsePostPessoa]
+Coordinates=687,10,198,344
+
+[DM.RESTRequestPutPessoa]
+Coordinates=1236,870,182,102
+
+[DM.RESTClientGetPessoaId]
+Coordinates=388,1026,179,80
+
+[DM.RESTResponseGetPessoaCPF]
+Coordinates=895,10,218,344
+
+[DM.RESTClientEspecialidade]
+Coordinates=10,1026,185,80
+
+[RoundProfissionais]
+Coordinates=1241,1184,126,36
+
+[DM.RESTRequestGetPessoaCPF]
+Coordinates=617,870,208,102
+
+[DM.RESTRequestPostPessoa]
+Coordinates=201,870,188,124
+
+[DM.RESTClientGetPessoaCPF]
+Coordinates=2003,870,194,80
+
+[DM.RESTRequestGetPessoaId]
+Coordinates=1032,870,194,102
+
+[DM.FDQFavorito]
+Coordinates=2007,10,111,190
+
+[DM.RESTClientTipoPessoa]
+Coordinates=205,1026,173,80
+
+[DM.RESTResponseGetPessoaId]
+Coordinates=1123,10,204,344
+
+[DM.RESTResponseTipoPessoa]
+Coordinates=1800,10,197,344
+
+[DM.RESTResponsePutPessoa]
+Coordinates=1337,10,191,344
+
+[DM.RESTClientPostPessoa]
+Coordinates=577,1026,173,80
+
+[DM.RESTClientPutPessoa]
+Coordinates=2306,870,167,80
+
+[DM.RESTResponseEspecialidade]
+Coordinates=467,10,210,344
+
+[DM.]
+Coordinates=10,870,181,146
+
+[Layout1]
+Coordinates=1567,1184,60,36
+
+[DM.FDQPessoa]
+Coordinates=10,10,96,850
 

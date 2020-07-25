@@ -79,6 +79,7 @@ type
     CircleFotoCadastro: TCircle;
     img_add: TImage;
     ActionPhotoLibrary: TTakePhotoFromLibraryAction;
+    Label12: TLabel;
     procedure Label3Click(Sender: TObject);
     procedure Image2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -178,15 +179,15 @@ begin
   PermissaoWriteStorage := JStringToString
     (TJManifest_permission.JavaClass.WRITE_EXTERNAL_STORAGE);
 {$ENDIF}
-  dm.FDQLogin.Close;
-  dm.FDQLogin.Open();
-  if dm.FDQLogin.RecordCount > 0 then
+  dm.FDQPessoa.Close;
+  dm.FDQPessoa.Open();
+  if dm.FDQPessoa.RecordCount > 0 then
   begin
     TabAction5.Execute;
     layout_rodape.Visible := false;
-    vFoto := dm.FDQLogin.CreateBlobStream
-      (dm.FDQLogin.FieldByName('img_usuario'), bmRead);
-    if not dm.FDQLoginimg_usuario.IsNull then
+    vFoto := dm.FDQPessoa.CreateBlobStream
+      (dm.FDQPessoa.FieldByName('img_usuario'), bmRead);
+    if not dm.FDQPessoaimg_usuario.IsNull then
     begin
       CircleFoto.Fill.Bitmap.Bitmap.LoadFromStream(vFoto);
     end;
@@ -260,25 +261,25 @@ end;
 
 procedure TFrmInicial.RectaCadastroSenhaClick(Sender: TObject);
 begin
-  dm.FDQLogin.Close;
-  dm.FDQLogin.Open();
+  dm.FDQPessoa.Close;
+  dm.FDQPessoa.Open();
   if (Edt_email.Text = EmptyStr) or (edt_senha.Text = EmptyStr) then
     Abort;
 
-  dm.FDQLogin.Append;
-  dm.FDQLoginemail.AsString := Edt_email.Text;
-  dm.FDQLoginsenha.AsString := edt_senha.Text;
+  dm.FDQPessoa.Append;
+  dm.FDQPessoaemail.AsString := Edt_email.Text;
+  dm.FDQPessoasenha.AsString := edt_senha.Text;
   StreamImg := TMemoryStream.Create;
   CircleFotoCadastro.Fill.Bitmap.Bitmap.SaveToStream(StreamImg);
   CircleFoto.Fill.Bitmap.Bitmap.SaveToStream(StreamImg);
-  dm.FDQLoginimg_usuario.LoadFromStream(StreamImg);
+  dm.FDQPessoaimg_usuario.LoadFromStream(StreamImg);
 
   if LabeltelaSenha.Text = 'Contratante' then
-    dm.FDQLogintp_login.AsInteger := 1
+    dm.FDQPessoatp_login.AsInteger := 1
   else
-    dm.FDQLogintp_login.AsInteger := 2;
+    dm.FDQPessoatp_login.AsInteger := 2;
 
-  dm.FDQLogin.Post;
+  dm.FDQPessoa.Post;
   dm.FDConnection1.CommitRetaining;
 
   TabAction5.Execute;
@@ -287,14 +288,13 @@ end;
 procedure TFrmInicial.RectEntrarClick(Sender: TObject);
 begin
 
-  if (edt_login.Text = dm.FDQLoginemail.AsString) and
-    (edt_senhalogin.Text = dm.FDQLoginsenha.AsString) then
+  if (edt_login.Text = dm.FDQPessoaemail.AsString) and
+    (edt_senhalogin.Text = dm.FDQPessoasenha.AsString) then
   begin
     if not Assigned(FrmMenu) then
       Application.CreateForm(TFrmMenu, FrmMenu);
 
     FrmMenu.Show;
-
   end
   else
   begin

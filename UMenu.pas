@@ -150,13 +150,17 @@ type
     LayoutCelular: TLayout;
     Label16: TLabel;
     ComboBox1: TComboBox;
+    BindingsList1: TBindingsList;
+    RoundProfissionais: TRoundRect;
+    LabelProfissionais: TLabel;
     LayoutEspecialidade: TLayout;
     Line11: TLine;
     Label17: TLabel;
-    BindingsList1: TBindingsList;
     VertScrollBox5Especialidade: TVertScrollBox;
-    RoundProfissionais: TRoundRect;
-    LabelProfissionais: TLabel;
+    LayoutValor: TLayout;
+    Label15: TLabel;
+    edt_valor: TEdit;
+    Line12: TLine;
     procedure RectMeusDadosClick(Sender: TObject);
     procedure ActionPhotoLibraryDidFinishTaking(Image: TBitmap);
     procedure edt_nascimentoExit(Sender: TObject);
@@ -173,9 +177,9 @@ type
     procedure Pulsar(aba: integer);
     procedure PaintIcone(aba: integer);
     procedure AddItemFavorito(codigo: integer; avaliacao: real;
-      nome, profissao, cidade: string);
+      nome, cidade, especialidade: string);
     procedure AddItem(codigo: integer; avaliacao: real;
-      nome, profissao, cidade: string);
+      nome, profissao, cidade, especialidade: string);
     procedure CarregarMeusDados;
     procedure OcultaBotoes;
     procedure CalculaIdade;
@@ -186,15 +190,19 @@ type
     procedure CarregarEspecialidades;
     procedure atualizaEspecialidade;
     procedure InsertEspecialidade(Sender: TObject);
-    procedure ValidaEspecialidade(coditem: integer);
-    procedure EnviaRegistros;
+    procedure EnviaRegistrosPessoa;
     procedure CarregarListaPessoas(tpPessoa: integer);
     procedure CarregarEspecialidadesServidor;
+    procedure AddFavoritos(Sender: TObject);
+    procedure AddItemavoritos(nome: string; id: integer; cidade: string;
+      estado: string; cpf: string; especialidadejson: string; pontuacao: real);
+    procedure CarregarFavoritos(tpPessoa: integer);
 
     { Private declarations }
   public
     { Public declarations }
     conexao: Boolean;
+    especialidade: string;
   end;
 
 var
@@ -204,7 +212,7 @@ implementation
 
 {$R *.fmx}
 
-uses UDM, FMX.DialogService
+uses UDM, FMX.DialogService, loading
 {$IFDEF ANDROID}
     , Androidapi.Helpers, Androidapi.JNI.JavaTypes, Androidapi.JNI.Os
 {$ENDIF}
@@ -237,36 +245,51 @@ begin
   end; { try / finally }
 end;
 
-procedure TFrmMenu.EnviaRegistros();
+procedure TFrmMenu.CarregarListaPessoas(tpPessoa: integer);
 var
-  f: TField;
+  retorno: TJSONArray;
+  nome, profissao, cidade, estado, especialidadejson, especialidade: string;
+  pontuacao: real;
+  id: integer;
   o: TJSOnObject;
+  i, x, count: integer;
+  StrList: TStringList;
 begin
-  // enviar dados pessoais
-  dm.FDQLogin.First;
-  while not dm.FDQLogin.EOF do
+  dm.RESTRequestTipoPessoa.Resource := '?tipopessoa={tp}';
+  dm.RESTRequestTipoPessoa.Params.AddUrlSegment('tp', IntToStr(tpPessoa));
+  dm.RESTRequestTipoPessoa.Execute;
+
+  retorno := dm.RESTRequestTipoPessoa.Response.JSONValue as TJSONArray;
+  for i := 0 to retorno.Size - 1 do
   begin
-    o := TJSOnObject.Create;
-    for f in dm.FDQLogin.Fields do
-      if f.FieldName = 'img_usuario' then
-        o.AddPair(f.FieldName, VarToStr(EmptyStr))
-      else
-        o.AddPair(f.FieldName, VarToStr(f.Value));
-    dm.FDQLogin.Next;
+    o := retorno.Items[i] as TJSOnObject;
+    nome := o.GetValue('nome').Value;
+    id := StrToInt(o.GetValue('id').Value);
+    cidade := o.GetValue('cidade').Value;
+    estado := o.GetValue('uf').Value;
+    especialidadejson := o.GetValue('especialidade').Value;
+    pontuacao := StrToFloat(o.GetValue('avaliacao').Value);
+    especialidade := EmptyStr;
+    StrList := TStringList.Create;
+    try
+      // alimentar a lista com a string
+      StrList.Delimiter := '|';
+      StrList.StrictDelimiter := true;
+      StrList.DelimitedText := especialidadejson;
+      for x := 1 to StrList.count - 1 do
+      begin
+        dm.FDQEspecialidade.Locate('id', StrList[x], []);
+        especialidade := especialidade + dm.FDQEspecialidadedescricao.
+          AsString + ' - ';
+      end;
+
+    finally
+      StrList.Free;
+    end;
+
+    AddItem(id, pontuacao, nome, profissao, cidade + '-' + estado,
+      especialidade);
   end;
-  dm.RESTRequestPostPessoa.AddBody(o.ToString,
-    ContentTypeFromString('application/json'));
-  dm.RESTRequestPostPessoa.Execute;
-  if dm.RESTResponsePostPessoa.StatusCode = 201 then
-    ShowMessage('Incluido com sucesso.');
-
-  // enviar dados do profissional
-  dm.FDQPEspecialidade.Close;
-  dm.FDQPEspecialidade.ParamByName('login').AsInteger :=
-    dm.FDQLoginid.AsInteger;
-  dm.FDQPEspecialidade.Open();
-
-
 
 end;
 
@@ -295,16 +318,6 @@ begin
   CalculaIdade;
 end;
 
-procedure TFrmMenu.ValidaEspecialidade(coditem: integer);
-begin
-  // ShowMessage(TCheckBox(Sender).TagString);
-  dm.FDQValidaEspecialidade.Close;
-  dm.FDQValidaEspecialidade.ParamByName('especialidade').AsInteger := coditem;
-  dm.FDQValidaEspecialidade.ParamByName('login').AsInteger :=
-    dm.FDQLoginid.AsInteger;
-  dm.FDQValidaEspecialidade.Open;
-end;
-
 procedure TFrmMenu.atualizaEspecialidade;
 begin
   dm.FDQEspecialidade.Close;
@@ -315,9 +328,11 @@ end;
 procedure TFrmMenu.CarregarEspecialidades;
 var
   check: TCheckBox;
+  StrList: TStringList;
+  i, count: integer;
 begin
   atualizaEspecialidade;
-
+  i := 1;
   while not dm.FDQEspecialidade.EOF do
   begin
     check := TCheckBox.Create(VertScrollBox5Especialidade);
@@ -331,9 +346,27 @@ begin
       TagString := dm.FDQEspecialidadeid.AsString;
       Name := 'check' + dm.FDQEspecialidadeid.AsString;
       OnClick := InsertEspecialidade;
-      ValidaEspecialidade(dm.FDQEspecialidadeid.AsInteger);
-      if dm.FDQValidaEspecialidade.RecordCount = 1 then
-        ischecked := true;
+
+      StrList := TStringList.Create;
+      try
+        // alimentar a lista com a string
+        StrList.Delimiter := '|';
+        StrList.StrictDelimiter := true;
+        StrList.DelimitedText := dm.FDQPessoaespecialidade.AsString;
+        count := StrList.count;
+        if count <> 0 then
+        begin
+          if StrList[i] = dm.FDQEspecialidadeid.AsString then
+          begin
+            IsChecked := true;
+            i := i + 1;
+            if i >= count then
+              i := 0;
+          end;
+        end;
+      finally
+        StrList.Free;
+      end;
     end;
     VertScrollBox5Especialidade.AddObject(check);
     dm.FDQEspecialidade.Next;
@@ -341,30 +374,13 @@ begin
 
 end;
 
+// TODO: inserir especialidades para o profissional
 procedure TFrmMenu.InsertEspecialidade(Sender: TObject);
 var
   coditem: integer;
-  strSQL: string;
 begin
   coditem := StrToInt(TCheckBox(Sender).TagString);
-  ValidaEspecialidade(coditem);
-
-  if dm.FDQValidaEspecialidade.RecordCount = 0 then
-  begin
-    dm.FDQProfissionalEspecialidade.Append;
-    dm.FDQProfissionalEspecialidadeid_login.AsInteger :=
-      dm.FDQLoginid.AsInteger;
-    dm.FDQProfissionalEspecialidadeid_especialidade.AsInteger := coditem;
-    dm.FDQProfissionalEspecialidade.Post;
-  end
-  else
-  begin
-    strSQL := 'delete from profissionalespecialidade where id_especialidade =' +
-      IntToStr(coditem) + ' and id_login=' + dm.FDQLoginid.AsString;
-    dm.FDConnection1.ExecSQL(strSQL);
-  end;
-
-  dm.FDConnection1.CommitRetaining;
+  especialidade := especialidade + '|' + IntToStr(coditem);
 end;
 
 procedure TFrmMenu.FormCreate(Sender: TObject);
@@ -373,9 +389,23 @@ begin
   // Atualização app
   if conexao then
   begin
-    CarregarEspecialidadesServidor;
-  end;
 
+    TLoading.Show(FrmMenu, 'Consultando...');
+
+    TThread.CreateAnonymousThread(
+      procedure
+      begin
+
+        CarregarEspecialidadesServidor;
+
+        TThread.Synchronize(nil,
+          procedure
+          begin
+            TLoading.Hide;
+          end);
+      end).Start;
+
+  end;
 end;
 
 procedure TFrmMenu.CarregarEspecialidadesServidor;
@@ -415,54 +445,84 @@ begin
   TabAction1.Execute;
   CalculaIdade;
   SelecionaAba(layout_aba1);
-  LabelNomeUser.Text := dm.FDQLoginnome.AsString;
-  vFoto := dm.FDQLogin.CreateBlobStream
-    (dm.FDQLogin.FieldByName('img_usuario'), bmRead);
-  if not dm.FDQLoginimg_usuario.IsNull then
+  LabelNomeUser.Text := dm.FDQPessoanome.AsString;
+  vFoto := dm.FDQPessoa.CreateBlobStream
+    (dm.FDQPessoa.FieldByName('img_usuario'), bmRead);
+
+  if not dm.FDQPessoaimg_usuario.IsNull then
   begin
     CircleFoto.Fill.Bitmap.Bitmap.LoadFromStream(vFoto);
   end;
+
   CarregarEspecialidades;
-  if dm.FDQLogintp_login.AsInteger = 1 then
+
+  if dm.FDQPessoatp_login.AsInteger = 1 then
   begin
     LabelProfissionais.Text := 'Profissionais';
     LabelProfissionais2.Text := 'Profissionais';
-    CarregarListaPessoas(2)
+    CarregarListaPessoas(2);
+    CarregarFavoritos(2);
   end
   else
   begin
     LabelProfissionais2.Text := 'Contratante';
     LabelProfissionais.Text := 'Contratante';
     CarregarListaPessoas(1);
+    CarregarFavoritos(1);
   end;
 
 end;
 
-procedure TFrmMenu.CarregarListaPessoas(tpPessoa: integer);
+procedure TFrmMenu.CarregarFavoritos(tpPessoa: integer);
 var
-  retorno: TJSONArray;
-  nome, profissao, cidade, estado: string;
+  retorno: TJSOnObject;
+  nome, cidade, estado, cpf, especialidadejson: string;
   pontuacao: real;
-  id: integer;
-  o: TJSOnObject;
-  i: integer;
+  id, x: integer;
+  StrList: TStringList;
 begin
-  dm.RESTRequestTipoPessoa.Resource := '?tipopessoa={tp}';
-  dm.RESTRequestTipoPessoa.Params.AddUrlSegment('tp', IntToStr(tpPessoa));
-  dm.RESTRequestTipoPessoa.Execute;
+  dm.FDQFavorito.Close;
+  dm.FDQFavorito.Open;
 
-  retorno := dm.RESTRequestTipoPessoa.Response.JSONValue as TJSONArray;
-  for i := 0 to retorno.Size - 1 do
+  while not dm.FDQFavorito.EOF do
   begin
-    o := retorno.Items[i] as TJSOnObject;
-    nome := o.GetValue('nome').Value;
-    id := StrToInt(o.GetValue('id').Value);
-    cidade := o.GetValue('cidade').Value;
-    estado := o.GetValue('uf').Value;
-    pontuacao := 1;
-    AddItem(id, pontuacao, nome, profissao, cidade + '-' + estado);
-  end;
+    dm.RESTRequestGetPessoaId.Resource := '{id}';
+    dm.RESTRequestGetPessoaId.Params.AddUrlSegment('id',
+      dm.FDQFavoritoid_server.AsString);
+    dm.RESTRequestGetPessoaId.Execute;
 
+    retorno := dm.RESTRequestGetPessoaId.Response.JSONValue as TJSOnObject;
+
+    nome := retorno.GetValue('nome').Value;
+    id := StrToInt(retorno.GetValue('id').Value);
+    cidade := retorno.GetValue('cidade').Value;
+    estado := retorno.GetValue('uf').Value;
+    cpf := retorno.GetValue('cpf').Value;
+    especialidadejson := retorno.GetValue('especialidade').Value;
+    pontuacao := StrToFloat(retorno.GetValue('avaliacao').Value);
+    especialidade := EmptyStr;
+    StrList := TStringList.Create;
+    try
+      // alimentar a lista com a string
+      StrList.Delimiter := '|';
+      StrList.StrictDelimiter := true;
+      StrList.DelimitedText := especialidadejson;
+      for x := 1 to StrList.count - 1 do
+      begin
+        dm.FDQEspecialidade.Locate('id', StrList[x], []);
+        especialidade := especialidade + dm.FDQEspecialidadedescricao.
+          AsString + ' - ';
+      end;
+
+    finally
+      StrList.Free;
+    end;
+
+    AddItemFavorito(dm.FDQFavoritoid_server.AsInteger, pontuacao,
+      dm.FDQFavoritonome.AsString, dm.FDQFavoritocidade.AsString + '-' +
+      dm.FDQFavoritouf.AsString, especialidade);
+    dm.FDQFavorito.Next;
+  end;
 end;
 
 procedure TFrmMenu.AnimationBallFinish(Sender: TObject);
@@ -483,77 +543,168 @@ procedure TFrmMenu.img_cancelarClick(Sender: TObject);
 begin
   OcultaBotoes;
   TabAction1.Execute;
-  dm.FDQLogin.Cancel;
+  dm.FDQPessoa.Cancel;
   dm.FDConnection1.RollbackRetaining;
 end;
 
 procedure TFrmMenu.img_salvarClick(Sender: TObject);
 begin
-  dm.FDQLogin.Edit;
-  dm.FDQLoginnome.AsString := Edt_Nome.Text;
-  dm.FDQLogincpf.AsString := Edt_Cpf.Text;
-  dm.FDQLogincep.AsString := Edt_Cep.Text;
-  dm.FDQLogincelular.AsString := edt_Celular.Text;
-  dm.FDQLoginendreco.AsString := Edt_end.Text;
-  dm.FDQLogincomplemento.AsString := Edt_complemento.Text;
-  dm.FDQLogincidade.AsString := Edt_cidade.Text;
-  dm.FDQLoginuf.AsString := edt_uf.Text;
-  dm.FDQLoginbairro.AsString := Edt_bairro.Text;
-  dm.FDQLogindt_nascimento.AsString := edt_nascimento.Text;
-  dm.FDQLoginobservacao.AsString := MemoObservacao.Text;
-  dm.FDQLogindomingoHoras.AsString := EdtDomingo.Text;
-  dm.FDQLoginsegundaHoras.AsString := EdtSegunda.Text;
-  dm.FDQLogintercaHoras.AsString := EdtTerca.Text;
-  dm.FDQLoginquartaHoras.AsString := EdtQuarta.Text;
-  dm.FDQLoginquintaHoras.AsString := EdtQuinta.Text;
-  dm.FDQLoginsextaHoras.AsString := EdtSexta.Text;
-  dm.FDQLoginsabadoHoras.AsString := EdtSabado.Text;
-  dm.FDQLoginsexo.AsString := ComboBox1.Items[ComboBox1.ItemIndex];
+  if Edt_Cpf.Text = EmptyStr then
+  begin
+    Edt_Cpf.SetFocus;
+    ShowMessage('CPF é um campo obrigatório');
+  end;
 
-  if CheckBoxDomingo.ischecked then
-    dm.FDQLogindomingo.AsString := 'X'
+  dm.FDQPessoa.Edit;
+  dm.FDQPessoanome.AsString := Edt_Nome.Text;
+  dm.FDQPessoacpf.AsString := Edt_Cpf.Text;
+  dm.FDQPessoacep.AsString := Edt_Cep.Text;
+  dm.FDQPessoacelular.AsString := edt_Celular.Text;
+  dm.FDQPessoaendereco.AsString := Edt_end.Text;
+  dm.FDQPessoacomplemento.AsString := Edt_complemento.Text;
+  dm.FDQPessoacidade.AsString := Edt_cidade.Text;
+  dm.FDQPessoauf.AsString := edt_uf.Text;
+  dm.FDQPessoabairro.AsString := Edt_bairro.Text;
+  dm.FDQPessoadt_nascimento.AsString := edt_nascimento.Text;
+  dm.FDQPessoaobservacao.AsString := MemoObservacao.Text;
+  dm.FDQPessoadomingoHoras.AsString := EdtDomingo.Text;
+  dm.FDQPessoasegundaHoras.AsString := EdtSegunda.Text;
+  dm.FDQPessoatercaHoras.AsString := EdtTerca.Text;
+  dm.FDQPessoaquartaHoras.AsString := EdtQuarta.Text;
+  dm.FDQPessoaquintaHoras.AsString := EdtQuinta.Text;
+  dm.FDQPessoasextaHoras.AsString := EdtSexta.Text;
+  dm.FDQPessoasabadoHoras.AsString := EdtSabado.Text;
+  dm.FDQPessoasexo.AsString := ComboBox1.Items[ComboBox1.ItemIndex];
+  dm.FDQPessoavalor_hora.AsString := edt_valor.Text;
+  dm.FDQPessoaespecialidade.AsString := especialidade;
+
+  if CheckBoxDomingo.IsChecked then
+    dm.FDQPessoadomingo.AsString := 'X'
   else
-    dm.FDQLogindomingo.AsString := EmptyStr;
+    dm.FDQPessoadomingo.AsString := EmptyStr;
 
-  if CheckBoxSegunda.ischecked then
-    dm.FDQLoginsegunda.AsString := 'X'
+  if CheckBoxSegunda.IsChecked then
+    dm.FDQPessoasegunda.AsString := 'X'
   else
-    dm.FDQLoginsegunda.AsString := EmptyStr;
+    dm.FDQPessoasegunda.AsString := EmptyStr;
 
-  if CheckBoxTerca.ischecked then
-    dm.FDQLoginterca.AsString := 'X'
+  if CheckBoxTerca.IsChecked then
+    dm.FDQPessoaterca.AsString := 'X'
   else
-    dm.FDQLoginterca.AsString := EmptyStr;
+    dm.FDQPessoaterca.AsString := EmptyStr;
 
-  if CheckBoxQuarta.ischecked then
-    dm.FDQLoginquarta.AsString := 'X'
+  if CheckBoxQuarta.IsChecked then
+    dm.FDQPessoaquarta.AsString := 'X'
   else
-    dm.FDQLoginquarta.AsString := EmptyStr;
+    dm.FDQPessoaquarta.AsString := EmptyStr;
 
-  if CheckBoxQuinta.ischecked then
-    dm.FDQLoginquinta.AsString := 'X'
+  if CheckBoxQuinta.IsChecked then
+    dm.FDQPessoaquinta.AsString := 'X'
   else
-    dm.FDQLoginquinta.AsString := EmptyStr;
+    dm.FDQPessoaquinta.AsString := EmptyStr;
 
-  if CheckBoxSexta.ischecked then
-    dm.FDQLoginsexta.AsString := 'X'
+  if CheckBoxSexta.IsChecked then
+    dm.FDQPessoasexta.AsString := 'X'
   else
-    dm.FDQLoginsexta.AsString := EmptyStr;
+    dm.FDQPessoasexta.AsString := EmptyStr;
 
-  if CheckBoxSabado.ischecked then
-    dm.FDQLoginsabado.AsString := 'X'
+  if CheckBoxSabado.IsChecked then
+    dm.FDQPessoasabado.AsString := 'X'
   else
-    dm.FDQLoginsabado.AsString := EmptyStr;
+    dm.FDQPessoasabado.AsString := EmptyStr;
 
-  dm.FDQLogin.Post;
+  dm.FDQPessoa.Post;
   dm.FDConnection1.CommitRetaining;
+
   if conexao then
   begin
-    ShowMessage('enviando servidor');
-    EnviaRegistros;
+    TLoading.Show(FrmMenu, 'Enviadno registro...');
+
+    TThread.CreateAnonymousThread(
+      procedure
+      begin
+
+        EnviaRegistrosPessoa;
+
+        TThread.Synchronize(nil,
+          procedure
+          begin
+            TLoading.Hide;
+          end);
+      end).Start;
   end;
+
   OcultaBotoes;
   TabAction1.Execute;
+end;
+
+procedure TFrmMenu.EnviaRegistrosPessoa();
+var
+  f: TField;
+  o: TJSOnObject;
+  retornoPost, retornoverifica: TJSOnObject;
+  sql: string;
+  id: string;
+begin
+  if dm.FDQPessoaid_server.AsString = EmptyStr then
+  begin
+    // se não estiver no server enviar dados pessoais
+    dm.FDQPessoa.First;
+    while not dm.FDQPessoa.EOF do
+    begin
+      o := TJSOnObject.Create;
+      for f in dm.FDQPessoa.Fields do
+        if f.FieldName = 'img_usuario' then
+          o.AddPair(f.FieldName, VarToStr(EmptyStr))
+        else
+          o.AddPair(f.FieldName, VarToStr(f.Value));
+      dm.FDQPessoa.Next;
+
+      dm.RESTRequestPostPessoa.AddBody(o.ToString,
+        ContentTypeFromString('application/json'));
+      dm.RESTRequestPostPessoa.Execute;
+      try
+        retornoPost := dm.RESTRequestPostPessoa.Response.JSONValue as
+          TJSOnObject;
+
+        if dm.RESTResponsePostPessoa.StatusCode = 201 then
+          ShowMessage('Incluido com sucesso.');
+      finally
+        sleep(100);
+      end;
+    end;
+    sleep(100);
+    // Primeiro verifica se o usuário não esta no server pelo cpf
+    dm.RESTRequestgetPessoaCpf.Resource := '?cpf={cpf}';
+    dm.RESTRequestgetPessoaCpf.Params.AddUrlSegment('cpf',
+      dm.FDQPessoacpf.AsString);
+    try
+      dm.RESTRequestgetPessoaCpf.Execute;
+      retornoverifica := dm.RESTRequestgetPessoaCpf.Response.JSONValue as
+        TJSOnObject;
+    finally
+      sleep(100);
+      if retornoverifica <> nil then
+      begin
+        // TODO: Aqui tenho que pegar o ID e retornar
+        id := retornoverifica.GetValue('id').Value;
+
+        sql := 'update pessoa set id_server = ' + id + ' where id = ' +
+          dm.FDQPessoaid.AsString;
+        dm.FDConnection1.ExecSQL(sql);
+        dm.FDConnection1.CommitRetaining;
+      end
+    end;
+  end
+  else
+  begin
+    // TODO aqui chamada do put
+    dm.RESTRequestPutPessoa.Resource := '{id}';
+    dm.RESTRequestgetPessoaCpf.Params.AddUrlSegment('id',
+      dm.FDQPessoaid_server.AsString);
+    dm.RESTRequestgetPessoaCpf.Execute;
+  end;
+
 end;
 
 procedure TFrmMenu.layout_aba1Click(Sender: TObject);
@@ -636,8 +787,8 @@ end;
 procedure TFrmMenu.RectMeusDadosClick(Sender: TObject);
 begin
   TabAction2.Execute();
-  dm.FDQLogin.Close;
-  dm.FDQLogin.Open();
+  dm.FDQPessoa.Close;
+  dm.FDQPessoa.Open();
   CarregarMeusDados;
 end;
 
@@ -652,198 +803,12 @@ begin
 end;
 
 procedure TFrmMenu.AddItemFavorito(codigo: integer; avaliacao: real;
-  nome, profissao, cidade: string);
+nome, cidade, especialidade: string);
 var
   rect, rect_barra, rect_icone: TRectangle;
   lbl: TLabel;
   img: TImage;
   i: integer;
-  pontos: integer;
-begin
-
-  // fundo
-  rect := TRectangle.Create(VertScrollBox3);
-  with rect do
-  begin
-    Align := TAlignLayout.Top;
-    Height := 110;
-    Fill.Color := $FFFFFFFF;
-    Stroke.Kind := TBrushKind.Solid;
-    Stroke.Color := $FFD4D5D7;
-    Margins.Top := 10;
-    Margins.Left := 10;
-    Margins.Right := 10;
-    XRadius := 8;
-    YRadius := 8;
-    TagString := IntToStr(codigo);
-  end;
-
-  // Barra inferior...
-  rect_barra := TRectangle.Create(rect);
-  with rect_barra do
-  begin
-    Align := TAlignLayout.Bottom;
-    Height := 55;
-    Fill.Color := $FFF4F4F4;
-    Stroke.Kind := TBrushKind.Solid;
-    Stroke.Color := $FFD4D5D7;
-    Sides := [TSide.Left, TSide.Bottom, TSide.Right];
-    XRadius := 8;
-    YRadius := 8;
-    Corners := [TCorner.BottomLeft, TCorner.BottomRight];
-    HitTest := False;
-    rect.AddObject(rect_barra);
-  end;
-
-  // Nome
-  lbl := TLabel.Create(rect);
-  with lbl do
-  begin
-    StyledSettings := StyledSettings - [TStyledSetting.Size,
-      TStyledSetting.FontColor, TStyledSetting.Style];
-    TextSettings.FontColor := $FF333333;
-    Text := nome;
-    font.Size := 16;
-    font.Style := [TFontStyle.fsBold];
-    Position.x := 50;
-    Position.Y := 20;
-    Width := 200;
-    rect.AddObject(lbl);
-  end;
-
-  // avaliações
-  lbl := TLabel.Create(rect);
-  with lbl do
-  begin
-    StyledSettings := StyledSettings - [TStyledSetting.Size,
-      TStyledSetting.FontColor, TStyledSetting.Style];
-    Anchors := [TAnchorKind.akTop, TAnchorKind.akRight];
-    TextSettings.FontColor := $EF700680;
-    TextSettings.HorzAlign := TTextAlign.Trailing;
-    Text := 'Avaliações';
-    font.Size := 12;
-    Width := 150;
-    Position.x := -160;
-    Position.Y := 7;
-    rect.AddObject(lbl);
-  end;
-
-  // Valor avaliação
-  lbl := TLabel.Create(rect);
-  with lbl do
-  begin
-    StyledSettings := StyledSettings - [TStyledSetting.Size,
-      TStyledSetting.FontColor, TStyledSetting.Style];
-    Anchors := [TAnchorKind.akTop, TAnchorKind.akRight];
-    TextSettings.FontColor := $FF685FEE;
-    TextSettings.HorzAlign := TTextAlign.Trailing;
-    Text := FloatToStr(avaliacao);
-    font.Size := 12;
-    Width := 150;
-    Position.x := -160; // VertScrollBox1.Width - 180;
-    Position.Y := 23;
-    font.Style := [TFontStyle.fsBold];
-    rect.AddObject(lbl);
-  end;
-
-  // profissao
-  lbl := TLabel.Create(rect);
-  with lbl do
-  begin
-    StyledSettings := StyledSettings - [TStyledSetting.Size,
-      TStyledSetting.FontColor, TStyledSetting.Style];
-    Anchors := [TAnchorKind.akTop, TAnchorKind.akLeft];
-    TextSettings.FontColor := $EF700680;
-    TextSettings.HorzAlign := TTextAlign.Leading;
-    Text := profissao;
-    Width := 250;
-    font.Size := 12;
-    Position.x := 4;
-    Position.Y := 1;
-    rect_barra.AddObject(lbl);
-  end;
-
-  img := TImage.Create(rect);
-  with img do
-  begin
-{$IFDEF MSWINDOWS}
-    Bitmap.LoadFromFile
-      (IOUtils.TPath.Combine
-      ('C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\img\',
-      'location.png'));
-{$ENDIF}
-{$IF DEFINED(iOS) or DEFINED(ANDROID)}
-    Bitmap.LoadFromFile
-      (IOUtils.TPath.Combine(System.IOUtils.TPath.GetDocumentsPath,
-      'location.png'));
-{$ENDIF}
-    Height := 30;
-    Width := 30;
-    Position.x := 2;
-    Position.Y := 15;
-    rect_barra.AddObject(img);
-  end;
-
-  // Cidade
-  lbl := TLabel.Create(rect);
-  with lbl do
-  begin
-    StyledSettings := StyledSettings - [TStyledSetting.Size,
-      TStyledSetting.FontColor, TStyledSetting.Style];
-    Anchors := [TAnchorKind.akTop, TAnchorKind.akLeft];
-    TextSettings.FontColor := $EF700680;
-    TextSettings.HorzAlign := TTextAlign.Leading;
-    Text := cidade;
-    font.Size := 12;
-    Position.x := 30;
-    Position.Y := 20;
-    rect_barra.AddObject(lbl);
-  end;
-
-  // Caixa de Icone...
-  rect_icone := TRectangle.Create(rect);
-  with rect_icone do
-  begin
-    Height := 30;
-    Width := 30;
-    Fill.Color := $EF700680;
-    Stroke.Kind := TBrushKind.None;
-    XRadius := 4;
-    YRadius := 4;
-    Position.x := 10;
-    Position.Y := 12;
-    HitTest := False;
-    rect.AddObject(rect_icone);
-  end;
-
-  // Label do icone...
-  lbl := TLabel.Create(rect);
-  with lbl do
-  begin
-    StyledSettings := StyledSettings - [TStyledSetting.Size,
-      TStyledSetting.FontColor, TStyledSetting.Style];
-    Align := TAlignLayout.Client;
-    Height := 20;
-    TextSettings.FontColor := $FFFFFFFF;
-    TextSettings.VertAlign := TTextAlign.Center;
-    TextSettings.HorzAlign := TTextAlign.Center;
-    Text := Copy(nome, 1, 1);
-    font.Size := 12;
-    font.Style := [TFontStyle.fsBold];
-    rect_icone.AddObject(lbl);
-  end;
-
-  VertScrollBox3.AddObject(rect);
-end;
-
-procedure TFrmMenu.AddItem(codigo: integer; avaliacao: real;
-  nome, profissao, cidade: string);
-var
-  rect, rect_barra, rect_icone: TRectangle;
-  lbl: TLabel;
-  img: TImage;
-  i: integer;
-  pontos: integer;
 begin
 
   // fundo
@@ -891,9 +856,75 @@ begin
     font.Size := 16;
     font.Style := [TFontStyle.fsBold];
     Position.x := 50;
-    Position.Y := 20;
+    Position.Y := 10;
     Width := 200;
     rect.AddObject(lbl);
+  end;
+
+  // Especialidade
+  lbl := TLabel.Create(rect);
+  with lbl do
+  begin
+    StyledSettings := StyledSettings - [TStyledSetting.Size,
+      TStyledSetting.FontColor, TStyledSetting.Style];
+    TextSettings.FontColor := $EF700680;
+    Text := especialidade;
+    font.Size := 11;
+    font.Style := [TFontStyle.fsBold];
+    Position.x := 5;
+    Position.Y := 40;
+    Width := 500;
+    rect.AddObject(lbl);
+  end;
+
+  img := TImage.Create(rect);
+  with img do
+  begin
+{$IFDEF MSWINDOWS}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine
+      ('C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\img\',
+      'heart_nosel.png'));
+{$ENDIF}
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine(System.IOUtils.TPath.GetDocumentsPath,
+      'heart_nosel.png'));
+{$ENDIF}
+    Height := 30;
+    Width := 30;
+    Position.x := 210;
+    Position.Y := 5;
+    name := 'imgheartNoSel' + IntToStr(codigo);
+    TagString := IntToStr(codigo);
+    OnClick := AddFavoritos;
+    Visible := true;
+    rect.AddObject(img);
+  end;
+
+  img := TImage.Create(rect);
+  with img do
+  begin
+{$IFDEF MSWINDOWS}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine
+      ('C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\img\',
+      'heart_sek.png'));
+{$ENDIF}
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine(System.IOUtils.TPath.GetDocumentsPath,
+      'heart_sek.png'));
+{$ENDIF}
+    Height := 30;
+    Width := 30;
+    Position.x := 210;
+    Position.Y := 5;
+    name := 'imgheartSel' + IntToStr(codigo);
+    TagString := IntToStr(codigo);
+    OnClick := AddFavoritos;
+    Visible := False;
+    rect.AddObject(img);
   end;
 
   // avaliações
@@ -913,7 +944,7 @@ begin
     rect.AddObject(lbl);
   end;
 
-  // Valor avaliação
+  // avaliação
   lbl := TLabel.Create(rect);
   with lbl do
   begin
@@ -929,23 +960,6 @@ begin
     Position.Y := 23;
     font.Style := [TFontStyle.fsBold];
     rect.AddObject(lbl);
-  end;
-
-  // profissao
-  lbl := TLabel.Create(rect);
-  with lbl do
-  begin
-    StyledSettings := StyledSettings - [TStyledSetting.Size,
-      TStyledSetting.FontColor, TStyledSetting.Style];
-    Anchors := [TAnchorKind.akTop, TAnchorKind.akLeft];
-    TextSettings.FontColor := $EF700680;
-    TextSettings.HorzAlign := TTextAlign.Leading;
-    Text := profissao;
-    Width := 250;
-    font.Size := 12;
-    Position.x := 4;
-    Position.Y := 1;
-    rect_barra.AddObject(lbl);
   end;
 
   img := TImage.Create(rect);
@@ -965,7 +979,7 @@ begin
     Height := 30;
     Width := 30;
     Position.x := 2;
-    Position.Y := 15;
+    Position.Y := 20;
     rect_barra.AddObject(img);
   end;
 
@@ -981,7 +995,7 @@ begin
     Text := cidade;
     font.Size := 12;
     Position.x := 30;
-    Position.Y := 20;
+    Position.Y := 25;
     rect_barra.AddObject(lbl);
   end;
 
@@ -996,7 +1010,240 @@ begin
     XRadius := 4;
     YRadius := 4;
     Position.x := 10;
-    Position.Y := 12;
+    Position.Y := 5;
+    HitTest := False;
+    rect.AddObject(rect_icone);
+  end;
+
+  // Label do icone...
+  lbl := TLabel.Create(rect);
+  with lbl do
+  begin
+    StyledSettings := StyledSettings - [TStyledSetting.Size,
+      TStyledSetting.FontColor, TStyledSetting.Style];
+    Align := TAlignLayout.Client;
+    Height := 20;
+    TextSettings.FontColor := $FFFFFFFF;
+    TextSettings.VertAlign := TTextAlign.Center;
+    TextSettings.HorzAlign := TTextAlign.Center;
+    Text := Copy(nome, 1, 1);
+    font.Size := 12;
+    font.Style := [TFontStyle.fsBold];
+    rect_icone.AddObject(lbl);
+  end;
+
+  VertScrollBox3.AddObject(rect);
+end;
+
+procedure TFrmMenu.AddItem(codigo: integer; avaliacao: real;
+nome, profissao, cidade, especialidade: string);
+var
+  rect, rect_barra, rect_icone: TRectangle;
+  lbl: TLabel;
+  img: TImage;
+  i: integer;
+begin
+
+  // fundo
+  rect := TRectangle.Create(VertScrollBox4);
+  with rect do
+  begin
+    Align := TAlignLayout.Top;
+    Height := 110;
+    Fill.Color := $FFFFFFFF;
+    Stroke.Kind := TBrushKind.Solid;
+    Stroke.Color := $FFD4D5D7;
+    Margins.Top := 10;
+    Margins.Left := 10;
+    Margins.Right := 10;
+    XRadius := 8;
+    YRadius := 8;
+    TagString := IntToStr(codigo);
+  end;
+
+  // Barra inferior...
+  rect_barra := TRectangle.Create(rect);
+  with rect_barra do
+  begin
+    Align := TAlignLayout.Bottom;
+    Height := 55;
+    Fill.Color := $FFF4F4F4;
+    Stroke.Kind := TBrushKind.Solid;
+    Stroke.Color := $FFD4D5D7;
+    Sides := [TSide.Left, TSide.Bottom, TSide.Right];
+    XRadius := 8;
+    YRadius := 8;
+    Corners := [TCorner.BottomLeft, TCorner.BottomRight];
+    HitTest := False;
+    rect.AddObject(rect_barra);
+  end;
+
+  // Nome
+  lbl := TLabel.Create(rect);
+  with lbl do
+  begin
+    StyledSettings := StyledSettings - [TStyledSetting.Size,
+      TStyledSetting.FontColor, TStyledSetting.Style];
+    TextSettings.FontColor := $FF333333;
+    Text := nome;
+    font.Size := 16;
+    font.Style := [TFontStyle.fsBold];
+    Position.x := 50;
+    Position.Y := 10;
+    Width := 200;
+    rect.AddObject(lbl);
+  end;
+
+  // Especialidade
+  lbl := TLabel.Create(rect);
+  with lbl do
+  begin
+    StyledSettings := StyledSettings - [TStyledSetting.Size,
+      TStyledSetting.FontColor, TStyledSetting.Style];
+    TextSettings.FontColor := $EF700680;
+    Text := especialidade;
+    font.Size := 11;
+    font.Style := [TFontStyle.fsBold];
+    Position.x := 5;
+    Position.Y := 40;
+    Width := 500;
+    rect.AddObject(lbl);
+  end;
+
+  img := TImage.Create(rect);
+  with img do
+  begin
+{$IFDEF MSWINDOWS}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine
+      ('C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\img\',
+      'heart_nosel.png'));
+{$ENDIF}
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine(System.IOUtils.TPath.GetDocumentsPath,
+      'heart_nosel.png'));
+{$ENDIF}
+    Height := 30;
+    Width := 30;
+    Position.x := 210;
+    Position.Y := 5;
+    name := 'imgheartNoSel' + IntToStr(codigo);
+    TagString := IntToStr(codigo);
+    OnClick := AddFavoritos;
+    Visible := true;
+    rect.AddObject(img);
+  end;
+
+  img := TImage.Create(rect);
+  with img do
+  begin
+{$IFDEF MSWINDOWS}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine
+      ('C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\img\',
+      'heart_sek.png'));
+{$ENDIF}
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine(System.IOUtils.TPath.GetDocumentsPath,
+      'heart_sek.png'));
+{$ENDIF}
+    Height := 30;
+    Width := 30;
+    Position.x := 210;
+    Position.Y := 5;
+    name := 'imgheartSel' + IntToStr(codigo);
+    TagString := IntToStr(codigo);
+    OnClick := AddFavoritos;
+    Visible := False;
+    rect.AddObject(img);
+  end;
+
+  // avaliações
+  lbl := TLabel.Create(rect);
+  with lbl do
+  begin
+    StyledSettings := StyledSettings - [TStyledSetting.Size,
+      TStyledSetting.FontColor, TStyledSetting.Style];
+    Anchors := [TAnchorKind.akTop, TAnchorKind.akRight];
+    TextSettings.FontColor := $EF700680;
+    TextSettings.HorzAlign := TTextAlign.Trailing;
+    Text := 'Avaliações';
+    font.Size := 12;
+    Width := 150;
+    Position.x := -160;
+    Position.Y := 7;
+    rect.AddObject(lbl);
+  end;
+
+  // avaliação
+  lbl := TLabel.Create(rect);
+  with lbl do
+  begin
+    StyledSettings := StyledSettings - [TStyledSetting.Size,
+      TStyledSetting.FontColor, TStyledSetting.Style];
+    Anchors := [TAnchorKind.akTop, TAnchorKind.akRight];
+    TextSettings.FontColor := $FF685FEE;
+    TextSettings.HorzAlign := TTextAlign.Trailing;
+    Text := FloatToStr(avaliacao);
+    font.Size := 12;
+    Width := 150;
+    Position.x := -160; // VertScrollBox1.Width - 180;
+    Position.Y := 23;
+    font.Style := [TFontStyle.fsBold];
+    rect.AddObject(lbl);
+  end;
+
+  img := TImage.Create(rect);
+  with img do
+  begin
+{$IFDEF MSWINDOWS}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine
+      ('C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\img\',
+      'location.png'));
+{$ENDIF}
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    Bitmap.LoadFromFile
+      (IOUtils.TPath.Combine(System.IOUtils.TPath.GetDocumentsPath,
+      'location.png'));
+{$ENDIF}
+    Height := 30;
+    Width := 30;
+    Position.x := 2;
+    Position.Y := 20;
+    rect_barra.AddObject(img);
+  end;
+
+  // Cidade
+  lbl := TLabel.Create(rect);
+  with lbl do
+  begin
+    StyledSettings := StyledSettings - [TStyledSetting.Size,
+      TStyledSetting.FontColor, TStyledSetting.Style];
+    Anchors := [TAnchorKind.akTop, TAnchorKind.akLeft];
+    TextSettings.FontColor := $EF700680;
+    TextSettings.HorzAlign := TTextAlign.Leading;
+    Text := cidade;
+    font.Size := 12;
+    Position.x := 30;
+    Position.Y := 25;
+    rect_barra.AddObject(lbl);
+  end;
+
+  // Caixa de Icone...
+  rect_icone := TRectangle.Create(rect);
+  with rect_icone do
+  begin
+    Height := 30;
+    Width := 30;
+    Fill.Color := $EF700680;
+    Stroke.Kind := TBrushKind.None;
+    XRadius := 4;
+    YRadius := 4;
+    Position.x := 10;
+    Position.Y := 5;
     HitTest := False;
     rect.AddObject(rect_icone);
   end;
@@ -1021,72 +1268,137 @@ begin
   VertScrollBox4.AddObject(rect);
 end;
 
+procedure TFrmMenu.AddFavoritos(Sender: TObject);
+var
+  retorno: TJSOnObject;
+  nome, cidade, estado, cpf, especialidadejson: string;
+  pontuacao: real;
+  id, x: integer;
+  StrList: TStringList;
+begin
+  dm.RESTRequestGetPessoaId.Resource := '{id}';
+  dm.RESTRequestGetPessoaId.Params.AddUrlSegment('id',
+    TImage(Sender).TagString);
+  dm.RESTRequestGetPessoaId.Execute;
+
+  retorno := dm.RESTRequestGetPessoaId.Response.JSONValue as TJSOnObject;
+
+  nome := retorno.GetValue('nome').Value;
+  id := StrToInt(retorno.GetValue('id').Value);
+  cidade := retorno.GetValue('cidade').Value;
+  estado := retorno.GetValue('uf').Value;
+  cpf := retorno.GetValue('cpf').Value;
+  especialidadejson := retorno.GetValue('especialidade').Value;
+  pontuacao := StrToFloat(retorno.GetValue('avaliacao').Value);
+  especialidade := EmptyStr;
+  StrList := TStringList.Create;
+  try
+    // alimentar a lista com a string
+    StrList.Delimiter := '|';
+    StrList.StrictDelimiter := true;
+    StrList.DelimitedText := especialidadejson;
+    for x := 1 to StrList.count - 1 do
+    begin
+      dm.FDQEspecialidade.Locate('id', StrList[x], []);
+      especialidade := especialidade + dm.FDQEspecialidadedescricao.
+        AsString + ' - ';
+    end;
+
+  finally
+    StrList.Free;
+  end;
+  dm.FDQFavorito.Append;
+  dm.FDQFavoritonome.AsString := nome;
+  dm.FDQFavoritoid_server.AsInteger := id;
+  dm.FDQFavoritocpf.AsString := cpf;
+  dm.FDQFavoritocidade.AsString := cidade;
+  dm.FDQFavoritouf.AsString := estado;
+  dm.FDQFavoritoespecialidade.AsString := especialidadejson;
+  dm.FDQFavorito.Post;
+  dm.FDConnection1.CommitRetaining;
+
+  dm.FDQFavorito.Close;
+  dm.FDQFavorito.Open;
+
+  while not dm.FDQFavorito.EOF do
+  begin
+    AddItemFavorito(id, pontuacao, dm.FDQFavoritonome.AsString,
+      dm.FDQFavoritocidade.AsString + '-' + dm.FDQFavoritouf.AsString,
+      especialidade);
+    dm.FDQFavorito.Next;
+  end;
+end;
+
 procedure TFrmMenu.CarregarMeusDados;
 begin
   img_salvar.Visible := true;
   img_cancelar.Visible := true;
 
   // 1 contratante
-  if dm.FDQLogintp_login.AsInteger = 1 then
+  if dm.FDQPessoatp_login.AsInteger = 1 then
   begin
     Label13.Text := 'Observação - Cuidados Necessários';
     LayoutEspecialidade.Visible := False;
+    LayoutValor.Visible := False;
   end
   else // 2 profissional
-    if dm.FDQLogintp_login.AsInteger = 2 then
+    if dm.FDQPessoatp_login.AsInteger = 2 then
     begin
       Label13.Text := 'Observação - Procedimentos oferecidos';
       LayoutEspecialidade.Visible := true;
-
+      LayoutValor.Visible := true;
     end;
 
-  Edt_Nome.Text := dm.FDQLoginnome.AsString;
-  Edt_Cpf.Text := dm.FDQLogincpf.AsString;
-  Edt_Cep.Text := dm.FDQLogincep.AsString;
-  edt_Celular.Text := dm.FDQLogincelular.AsString;
-  Edt_end.Text := dm.FDQLoginendreco.AsString;
-  Edt_complemento.Text := dm.FDQLoginendreco.AsString;
-  Edt_cidade.Text := dm.FDQLogincidade.AsString;
-  edt_uf.Text := dm.FDQLoginuf.AsString;
-  Edt_bairro.Text := dm.FDQLoginbairro.AsString;
-  edt_nascimento.Text := dm.FDQLogindt_nascimento.AsString;
-  MemoObservacao.Text := dm.FDQLoginobservacao.AsString;
-  EdtDomingo.Text := dm.FDQLogindomingoHoras.AsString;
-  EdtSegunda.Text := dm.FDQLoginsegundaHoras.AsString;
-  EdtTerca.Text := dm.FDQLogintercaHoras.AsString;
-  EdtQuarta.Text := dm.FDQLoginquartaHoras.AsString;
-  EdtQuinta.Text := dm.FDQLoginquintaHoras.AsString;
-  EdtSexta.Text := dm.FDQLoginsextaHoras.AsString;
-  EdtSabado.Text := dm.FDQLoginsabadoHoras.AsString;
+  Edt_Nome.Text := dm.FDQPessoanome.AsString;
+  Edt_Cpf.Text := dm.FDQPessoacpf.AsString;
+  Edt_Cep.Text := dm.FDQPessoacep.AsString;
+  edt_Celular.Text := dm.FDQPessoacelular.AsString;
+  Edt_end.Text := dm.FDQPessoaendereco.AsString;
+  Edt_complemento.Text := dm.FDQPessoacomplemento.AsString;
+  Edt_cidade.Text := dm.FDQPessoacidade.AsString;
+  edt_uf.Text := dm.FDQPessoauf.AsString;
+  Edt_bairro.Text := dm.FDQPessoabairro.AsString;
+  edt_nascimento.Text := dm.FDQPessoadt_nascimento.AsString;
+  MemoObservacao.Text := dm.FDQPessoaobservacao.AsString;
+  EdtDomingo.Text := dm.FDQPessoadomingoHoras.AsString;
+  EdtSegunda.Text := dm.FDQPessoasegundaHoras.AsString;
+  EdtTerca.Text := dm.FDQPessoatercaHoras.AsString;
+  EdtQuarta.Text := dm.FDQPessoaquartaHoras.AsString;
+  EdtQuinta.Text := dm.FDQPessoaquintaHoras.AsString;
+  EdtSexta.Text := dm.FDQPessoasextaHoras.AsString;
+  EdtSabado.Text := dm.FDQPessoasabadoHoras.AsString;
+  ComboBox1.Items.IndexOf(dm.FDQPessoasexo.AsString);
+  edt_valor.Text := dm.FDQPessoavalor_hora.AsString;
 
-  if dm.FDQLogindomingo.AsString = 'X' then
-    CheckBoxDomingo.ischecked
+  if dm.FDQPessoadomingo.AsString = 'X' then
+    CheckBoxDomingo.IsChecked
   else
-    CheckBoxDomingo.ischecked := False;
-  if dm.FDQLoginsegunda.AsString = 'X' then
-    CheckBoxSegunda.ischecked
+    CheckBoxDomingo.IsChecked := False;
+  if dm.FDQPessoasegunda.AsString = 'X' then
+    CheckBoxSegunda.IsChecked
   else
-    CheckBoxSegunda.ischecked := False;
-  if dm.FDQLoginterca.AsString = 'X' then
-    CheckBoxTerca.ischecked
+    CheckBoxSegunda.IsChecked := False;
+  if dm.FDQPessoaterca.AsString = 'X' then
+    CheckBoxTerca.IsChecked
   else
-    CheckBoxTerca.ischecked := False;
-  if dm.FDQLoginquarta.AsString = 'X' then
-    CheckBoxQuarta.ischecked
+    CheckBoxTerca.IsChecked := False;
+  if dm.FDQPessoaquarta.AsString = 'X' then
+    CheckBoxQuarta.IsChecked
   else
-    CheckBoxQuarta.ischecked := False;
-  if dm.FDQLoginquinta.AsString = 'X' then
-    CheckBoxQuinta.ischecked
+    CheckBoxQuarta.IsChecked := False;
+  if dm.FDQPessoaquinta.AsString = 'X' then
+    CheckBoxQuinta.IsChecked
   else
-    CheckBoxQuinta.ischecked := False;
-  if dm.FDQLoginsexta.AsString = 'X' then
-    CheckBoxSexta.ischecked
+    CheckBoxQuinta.IsChecked := False;
+  if dm.FDQPessoasexta.AsString = 'X' then
+    CheckBoxSexta.IsChecked
   else
-    CheckBoxSexta.ischecked := False;
-  if dm.FDQLoginsabado.AsString = 'X' then
-    CheckBoxSabado.ischecked
+    CheckBoxSexta.IsChecked := False;
+  if dm.FDQPessoasabado.AsString = 'X' then
+    CheckBoxSabado.IsChecked
   else
-    CheckBoxSabado.ischecked := False;
+    CheckBoxSabado.IsChecked := False;
+
 end;
 
 procedure TFrmMenu.OcultaBotoes;

@@ -15,56 +15,12 @@ uses
 type
   TDM = class(TDataModule)
     FDConnection1: TFDConnection;
-    FDQLogin: TFDQuery;
+    FDQPessoa: TFDQuery;
     FDQConfig: TFDQuery;
-    FDQLoginid: TFDAutoIncField;
-    FDQLoginnome: TStringField;
-    FDQLogincpf: TStringField;
-    FDQLogindt_nascimento: TDateField;
-    FDQLogincelular: TStringField;
-    FDQLogincep: TStringField;
-    FDQLoginendreco: TStringField;
-    FDQLogincidade: TStringField;
-    FDQLoginuf: TStringField;
-    FDQLogincomplemento: TStringField;
-    FDQLoginbairro: TStringField;
-    FDQLoginobservacao: TStringField;
-    FDQLogindomingo: TStringField;
-    FDQLogindomingoHoras: TStringField;
-    FDQLoginsegunda: TStringField;
-    FDQLoginsegundaHoras: TStringField;
-    FDQLoginterca: TStringField;
-    FDQLogintercaHoras: TStringField;
-    FDQLoginquarta: TStringField;
-    FDQLoginquartaHoras: TStringField;
-    FDQLoginquinta: TStringField;
-    FDQLoginquintaHoras: TStringField;
-    FDQLoginsexta: TStringField;
-    FDQLoginsextaHoras: TStringField;
-    FDQLoginsabado: TStringField;
-    FDQLoginsabadoHoras: TStringField;
-    FDQLoginemail: TStringField;
-    FDQLoginsenha: TStringField;
-    FDQLogintp_login: TIntegerField;
-    FDQLoginimg_usuario: TBlobField;
-    FDQLoginhash: TStringField;
-    FDQLoginsexo: TStringField;
     FDQEspecialidade: TFDQuery;
     FDQEspecialidadeid: TFDAutoIncField;
     FDQEspecialidadedescricao: TStringField;
-    FDQProfissionalEspecialidade: TFDQuery;
-    FDQProfissionalEspecialidadeid: TFDAutoIncField;
-    FDQProfissionalEspecialidadeid_especialidade: TIntegerField;
-    FDQProfissionalEspecialidadeid_login: TIntegerField;
-    FDQValidaEspecialidade: TFDQuery;
-    FDQValidaEspecialidadeid: TFDAutoIncField;
-    FDQValidaEspecialidadeid_especialidade: TIntegerField;
-    FDQValidaEspecialidadeid_login: TIntegerField;
-    FDQValidaEspecialidadeServer: TStringField;
-    FDQLoginServer: TStringField;
-    FDQLogincad_aprovado: TStringField;
     FDQEspecialidadeServer: TStringField;
-    FDQProfissionalEspecialidadeServer: TStringField;
     RESTClientTipoPessoa: TRESTClient;
     RESTRequestTipoPessoa: TRESTRequest;
     RESTResponseTipoPessoa: TRESTResponse;
@@ -75,11 +31,60 @@ type
     RESTRequestEspecialidade: TRESTRequest;
     RESTResponseEspecialidade: TRESTResponse;
     FDQEspecialidadeid_server: TIntegerField;
-    FDQPEspecialidade: TFDQuery;
-    FDAutoIncField1: TFDAutoIncField;
-    IntegerField1: TIntegerField;
-    IntegerField2: TIntegerField;
-    StringField1: TStringField;
+    RESTClientGetPessoaId: TRESTClient;
+    RESTRequestGetPessoaId: TRESTRequest;
+    RESTResponseGetPessoaId: TRESTResponse;
+    FDQFavorito: TFDQuery;
+    FDQFavoritoid: TFDAutoIncField;
+    FDQFavoritoid_server: TIntegerField;
+    FDQFavoritonome: TStringField;
+    FDQFavoritocpf: TStringField;
+    FDQFavoritocidade: TStringField;
+    FDQFavoritouf: TStringField;
+    RESTClientGetPessoaCPF: TRESTClient;
+    RESTRequestGetPessoaCPF: TRESTRequest;
+    RESTResponseGetPessoaCPF: TRESTResponse;
+    RESTClientPutPessoa: TRESTClient;
+    RESTRequestPutPessoa: TRESTRequest;
+    RESTResponsePutPessoa: TRESTResponse;
+    FDQPessoaid: TFDAutoIncField;
+    FDQPessoaid_server: TIntegerField;
+    FDQPessoanome: TStringField;
+    FDQPessoacpf: TStringField;
+    FDQPessoadt_nascimento: TDateField;
+    FDQPessoasexo: TStringField;
+    FDQPessoacelular: TStringField;
+    FDQPessoacep: TStringField;
+    FDQPessoacidade: TStringField;
+    FDQPessoauf: TStringField;
+    FDQPessoacomplemento: TStringField;
+    FDQPessoabairro: TStringField;
+    FDQPessoaobservacao: TStringField;
+    FDQPessoadomingo: TStringField;
+    FDQPessoadomingoHoras: TStringField;
+    FDQPessoasegunda: TStringField;
+    FDQPessoasegundaHoras: TStringField;
+    FDQPessoaterca: TStringField;
+    FDQPessoatercaHoras: TStringField;
+    FDQPessoaquarta: TStringField;
+    FDQPessoaquartaHoras: TStringField;
+    FDQPessoaquinta: TStringField;
+    FDQPessoaquintaHoras: TStringField;
+    FDQPessoasexta: TStringField;
+    FDQPessoasextaHoras: TStringField;
+    FDQPessoasabado: TStringField;
+    FDQPessoasabadoHoras: TStringField;
+    FDQPessoaemail: TStringField;
+    FDQPessoasenha: TStringField;
+    FDQPessoatp_login: TIntegerField;
+    FDQPessoaimg_usuario: TBlobField;
+    FDQPessoastatus: TStringField;
+    FDQPessoacad_aprovado: TStringField;
+    FDQPessoaavaliacao: TIntegerField;
+    FDQPessoavalor_hora: TStringField;
+    FDQPessoaespecialidade: TStringField;
+    FDQPessoaendereco: TStringField;
+    FDQFavoritoespecialidade: TStringField;
     procedure FDConnection1BeforeConnect(Sender: TObject);
     procedure FDConnection1AfterConnect(Sender: TObject);
   private
@@ -101,6 +106,7 @@ var
   strSQL: string;
   versao: string;
 begin
+  strSQL := EmptyStr;
   strSQL := //
     ' create table IF NOT EXISTS config( ' + //
     ' campo varchar(30),' + //
@@ -111,7 +117,7 @@ begin
   strSQL := //
     ' create table IF NOT EXISTS especialidade( ' + //
     ' id integer not null primary key autoincrement, ' + //
-    ' id_server integer, ' + //
+    ' id_server integer,     ' + //
     ' descricao varchar(40), ' + //
     ' Server char(1))';
   FDConnection1.ExecSQL(strSQL);
@@ -119,65 +125,57 @@ begin
   strSQL := EmptyStr;
   // tp_login = 1 Contratante = 2 Profissional
   strSQL := //
-    ' create table IF NOT EXISTS login(   ' + //
+
+    ' create table IF NOT EXISTS pessoa( 						 ' + //
     ' id integer not null primary key autoincrement, ' + //
     ' id_server integer,                             ' + //
     ' nome varchar(40),                              ' + //
     ' cpf varchar(11),                               ' + //
     ' dt_nascimento date (10),                       ' + //
+    ' sexo char(1),                                  ' + //
     ' celular varchar(13),                           ' + //
     ' cep varchar(10),                               ' + //
-    ' endreco varchar(60),                           ' + //
+    ' endereco varchar(60),                          ' + //
     ' cidade varchar(60),                            ' + //
     ' uf char(2),                                    ' + //
-    ' complemento varchar(60),                      ' + //
-    ' bairro varchar(60),                           ' + //
-    ' observacao varchar(300),                      ' + //
-    ' domingo char(1),                              ' + //
-    ' domingoHoras varchar(30),                     ' + //
-    ' segunda char(1),                              ' + //
-    ' segundaHoras varchar(30),                     ' + //
-    ' terca char(1),                                ' + //
-    ' tercaHoras varchar(30),                       ' + //
-    ' quarta char(1),                               ' + //
-    ' quartaHoras varchar(30),                      ' + //
-    ' quinta char(1),                               ' + //
-    ' quintaHoras varchar(30),                      ' + //
-    ' sexta char(1),                                ' + //
-    ' sextaHoras varchar(30),                       ' + //
-    ' sabado char(1),                               ' + //
-    ' sabadoHoras varchar(30),                      ' + //
-    ' email varchar(60),                            ' + //
-    ' senha varchar(10),                            ' + //
-    ' tp_login integer,                             ' + //
-    ' img_usuario blob,                             ' + //
-    ' sexo char(1),                                 ' + //
-    ' Server char(1),                               ' + //
-    ' cad_aprovado char(1),                         ' + //
-    ' avaliacao integer,                            ' + //
-    ' hash char(32))';
+    ' complemento varchar(60),                       ' + //
+    ' bairro varchar(60),                            ' + //
+    ' observacao varchar(300),                       ' + //
+    ' domingo char(1),                               ' + //
+    ' domingoHoras varchar(30),                      ' + //
+    ' segunda char(1),                               ' + //
+    ' segundaHoras varchar(30),                      ' + //
+    ' terca char(1),                                 ' + //
+    ' tercaHoras varchar(30),                        ' + //
+    ' quarta char(1),                                ' + //
+    ' quartaHoras varchar(30),                       ' + //
+    ' quinta char(1),                                ' + //
+    ' quintaHoras varchar(30),                       ' + //
+    ' sexta char(1),                                 ' + //
+    ' sextaHoras varchar(30),                        ' + //
+    ' sabado char(1),                                ' + //
+    ' sabadoHoras varchar(30),                       ' + //
+    ' email varchar(60),                             ' + //
+    ' senha varchar(10),                             ' + //
+    ' tp_login integer,                              ' + //
+    ' img_usuario blob,                              ' + //
+    ' status char(1),                                ' + //
+    ' cad_aprovado char(1),                          ' + //
+    ' avaliacao integer,                             ' + //
+    ' valor_hora char(8),                            ' + //
+    ' especialidade varchar(300))';
   FDConnection1.ExecSQL(strSQL);
 
   strSQL := EmptyStr;
   strSQL := //
-    ' create table IF NOT EXISTS ProfissionalEspecialidade (  ' + //
+    ' create table IF NOT EXISTS favorito( ' + //
     ' id integer not null primary key autoincrement,  ' + //
-    ' id_server integer,' + //
-    ' id_especialidade integer,   ' + //
-    ' id_login integer, ' + //
-    ' Server char(1))  ';
-  FDConnection1.ExecSQL(strSQL);
-
-  strSQL := EmptyStr;
-  strSQL := //
-    ' create table IF NOT EXISTS favoritos( ' + //
-    ' id integer not null primary key autoincrement,  ' + //
-    ' id_server integer, ' + //
-    ' nome varchar(40), ' + //
-    ' cpf varchar(11), ' + //
+    ' id_server integer,   ' + //
+    ' nome varchar(40),    ' + //
+    ' cpf varchar(11),     ' + //
     ' cidade varchar(60),  ' + //
-    ' uf char(2))';
-
+    ' uf char(2),          ' + //
+    ' especialidade varchar(300))';
   FDConnection1.ExecSQL(strSQL);
 
   FDQConfig.Active := false;
@@ -201,10 +199,9 @@ begin
   end;
 
   // ativa todas Fdquerys
-  FDQLogin.Active := true;
+  FDQPessoa.Active := true;
   FDQEspecialidade.Active := true;
-  FDQProfissionalEspecialidade.Active := true;;
-  FDQValidaEspecialidade.Active := true
+  FDQFavorito.Active := true;
 end;
 
 procedure TDM.FDConnection1BeforeConnect(Sender: TObject);

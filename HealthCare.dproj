@@ -445,6 +445,7 @@
             <Form>FrmMenu</Form>
             <FormType>fmx</FormType>
         </DCCReference>
+        <DCCReference Include="Loading.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -471,6 +472,13 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
+                <DeployFile LocalName="img\heart_sek.png" Configuration="Release" Class="File">
+                    <Platform Name="Android">
+                        <RemoteDir>.\assets\internal</RemoteDir>
+                        <RemoteName>heart_sek.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="bd\bd.sqlite" Configuration="Release" Class="File">
                     <Platform Name="Android">
                         <RemoteDir>.\assets\internal</RemoteDir>
@@ -530,6 +538,12 @@
                 <DeployFile LocalName="$(BDS)\lib\android\debug\mips\libnative-activity.so" Configuration="Debug" Class="AndroidLibnativeMipsFile">
                     <Platform Name="Android">
                         <RemoteName>libHealthCare.so</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win64\Debug\HealthCare.rsm" Configuration="Debug" Class="DebugSymbols">
+                    <Platform Name="Win64">
+                        <RemoteName>HealthCare.rsm</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -599,6 +613,13 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="img\heart_nosel.png" Configuration="Release" Class="File">
+                    <Platform Name="Android">
+                        <RemoteDir>.\assets\internal</RemoteDir>
+                        <RemoteName>heart_nosel.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -611,7 +632,6 @@
                 </DeployFile>
                 <DeployFile LocalName="img\AtivaHealthCare72.png" Configuration="Release" Class="Android_LauncherIcon72">
                     <Platform Name="Android">
-                        <Enabled>false</Enabled>
                         <RemoteName>ic_launcher.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
@@ -645,6 +665,13 @@
                     <Platform Name="Android">
                         <RemoteDir>.\assets\internal</RemoteDir>
                         <RemoteName>location.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="img\heart_nosel.png" Configuration="Debug" Class="File">
+                    <Platform Name="Android">
+                        <RemoteDir>.\assets\internal</RemoteDir>
+                        <RemoteName>heart_nosel.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -710,14 +737,12 @@
                 <DeployFile LocalName="img\location.png" Configuration="Release" Class="File">
                     <Platform Name="Android">
                         <RemoteDir>.\assets\internal</RemoteDir>
-                        <Enabled>false</Enabled>
                         <RemoteName>location.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="img\AtivaHealthCare144.png" Configuration="Release" Class="Android_LauncherIcon144">
                     <Platform Name="Android">
-                        <Enabled>false</Enabled>
                         <RemoteName>ic_launcher.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
@@ -787,7 +812,6 @@
                 </DeployFile>
                 <DeployFile LocalName="img\AtivaHealthCare48.png" Configuration="Release" Class="Android_LauncherIcon48">
                     <Platform Name="Android">
-                        <Enabled>false</Enabled>
                         <RemoteName>ic_launcher.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
@@ -805,8 +829,14 @@
                 </DeployFile>
                 <DeployFile LocalName="img\AtivaHealthCare36.png" Configuration="Release" Class="Android_LauncherIcon36">
                     <Platform Name="Android">
-                        <Enabled>false</Enabled>
                         <RemoteName>ic_launcher.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="img\heart_sek.png" Configuration="Debug" Class="File">
+                    <Platform Name="Android">
+                        <RemoteDir>.\assets\internal</RemoteDir>
+                        <RemoteName>heart_sek.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
