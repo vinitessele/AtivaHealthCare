@@ -67,9 +67,6 @@ Coordinates=1534,1026,94,58
 [Line8]
 Coordinates=537,1298,46,36
 
-[VertScrollBox3]
-Coordinates=427,1298,100,36
-
 [AnimationPulsoW]
 Coordinates=984,441,116,36
 
@@ -159,9 +156,6 @@ Coordinates=1466,1116,73,58
 
 [Layout4]
 Coordinates=798,1252,60,36
-
-[VertScrollBox2]
-Coordinates=2369,1184,100,36
 
 [LayoutGrupo]
 Coordinates=1732,1184,89,36
@@ -276,9 +270,6 @@ Coordinates=2100,1026,64,58
 
 [RESTRequest1]
 Coordinates=1680,870,103,102
-
-[VertScrollBox4]
-Coordinates=682,1298,100,36
 
 [img_busca]
 Coordinates=2298,1116,77,58
@@ -470,4 +461,13 @@ Coordinates=1567,1184,60,36
 
 [DM.FDQPessoa]
 Coordinates=10,10,96,850
+
+[VertScrollBoxMeusDados]
+Coordinates=2369,1184,100,36
+
+[VertScrollBoxFavoritos]
+Coordinates=427,1298,100,36
+
+[VertScrollBoxLista]
+Coordinates=682,1298,100,36
 

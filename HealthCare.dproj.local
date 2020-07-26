@@ -25,7 +25,7 @@
     <Transaction>2020/07/24 22:40:39.000.323,=C:\Users\vinic\Documents\Embarcadero\Studio\Projects\AtivaHealthCare\Loading.pas</Transaction>
   </Transactions>
 	<ActiveMobileDevice>
-		<NoProfile iOSSimulator="iPhone5" Android="" Android64=""/>
+		<NoProfile iOSSimulator="iPhone5" Android="RQ8M30LNNQB" Android64=""/>
 	</ActiveMobileDevice>
 	<ProjectSortOrder AutoSort="0" SortType="0">
     <File Path="android-support-v4.dex.jar"/>
