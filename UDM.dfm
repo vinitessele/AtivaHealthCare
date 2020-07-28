@@ -170,11 +170,6 @@ object DM: TDM
       Origin = 'email'
       Size = 60
     end
-    object FDQPessoasenha: TStringField
-      FieldName = 'senha'
-      Origin = 'senha'
-      Size = 10
-    end
     object FDQPessoatp_login: TIntegerField
       FieldName = 'tp_login'
       Origin = 'tp_login'
@@ -214,21 +209,11 @@ object DM: TDM
       FieldName = 'endereco'
       Size = 60
     end
-  end
-  object FDQConfig: TFDQuery
-    Active = True
-    Connection = FDConnection1
-    SQL.Strings = (
-      'select * from config where campo= :versao')
-    Left = 32
-    Top = 104
-    ParamData = <
-      item
-        Name = 'VERSAO'
-        DataType = ftString
-        ParamType = ptInput
-        Value = '1'
-      end>
+    object FDQPessoasenha: TStringField
+      FieldName = 'senha'
+      Origin = 'senha'
+      Size = 40
+    end
   end
   object FDQEspecialidade: TFDQuery
     Active = True

@@ -8,7 +8,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
   FMX.Edit, FMX.TabControl, FMX.Controls.Presentation, FMX.StdCtrls,
   FMX.Layouts, System.Actions, FMX.ActnList, FMX.StdActns,
-  FMX.MediaLibrary.Actions;
+  FMX.MediaLibrary.Actions, IdHashSHA;
 
 type
   TFrmInicial = class(TForm)
@@ -80,6 +80,7 @@ type
     img_add: TImage;
     ActionPhotoLibrary: TTakePhotoFromLibraryAction;
     Label12: TLabel;
+    Label13: TLabel;
     procedure Label3Click(Sender: TObject);
     procedure Image2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -102,6 +103,15 @@ type
     procedure FormActivate(Sender: TObject);
     procedure Image_esconderClick(Sender: TObject);
     procedure Image_exibirClick(Sender: TObject);
+    procedure RectEntrarMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
+    procedure RectEntrarMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
+    procedure RectaCadastroSenhaMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
+    procedure RectaCadastroSenhaMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
+    procedure Label13Click(Sender: TObject);
   private
     { Private declarations }
 {$IFDEF ANDROID}
@@ -157,6 +167,18 @@ begin
 end;
 {$ENDIF}
 
+function SHA1FromString(const AString: string): string;
+var
+  SHA1: TIdHashSHA1;
+begin
+  SHA1 := TIdHashSHA1.Create;
+  try
+    Result := SHA1.HashStringAsHex(AString);
+  finally
+    SHA1.Free;
+  end;
+end;
+
 procedure TFrmInicial.FormActivate(Sender: TObject);
 begin
 {$IFDEF ANDROID}
@@ -190,6 +212,7 @@ begin
     if not dm.FDQPessoaimg_usuario.IsNull then
     begin
       CircleFoto.Fill.Bitmap.Bitmap.LoadFromStream(vFoto);
+      CircleFotoCadastro.Fill.Bitmap.Bitmap.LoadFromStream(vFoto);
     end;
   end
   else
@@ -253,6 +276,11 @@ begin
   edt_senha.Password := True;
 end;
 
+procedure TFrmInicial.Label13Click(Sender: TObject);
+begin
+  ShowMessage('esqueceu a senha');
+end;
+
 procedure TFrmInicial.Label3Click(Sender: TObject);
 begin
   layout_rodape.Visible := false;
@@ -260,7 +288,11 @@ begin
 end;
 
 procedure TFrmInicial.RectaCadastroSenhaClick(Sender: TObject);
+var
+  senha: string;
 begin
+  senha := SHA1FromString(edt_senha.Text);
+
   dm.FDQPessoa.Close;
   dm.FDQPessoa.Open();
   if (Edt_email.Text = EmptyStr) or (edt_senha.Text = EmptyStr) then
@@ -268,7 +300,7 @@ begin
 
   dm.FDQPessoa.Append;
   dm.FDQPessoaemail.AsString := Edt_email.Text;
-  dm.FDQPessoasenha.AsString := edt_senha.Text;
+  dm.FDQPessoasenha.AsString := senha;
   StreamImg := TMemoryStream.Create;
   CircleFotoCadastro.Fill.Bitmap.Bitmap.SaveToStream(StreamImg);
   CircleFoto.Fill.Bitmap.Bitmap.SaveToStream(StreamImg);
@@ -285,11 +317,26 @@ begin
   TabAction5.Execute;
 end;
 
-procedure TFrmInicial.RectEntrarClick(Sender: TObject);
+procedure TFrmInicial.RectaCadastroSenhaMouseDown(Sender: TObject;
+Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
+  RectaCadastroSenha.Opacity := 0.5;
+end;
+
+procedure TFrmInicial.RectaCadastroSenhaMouseUp(Sender: TObject;
+Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+begin
+  RectaCadastroSenha.Opacity := 1;
+end;
+
+procedure TFrmInicial.RectEntrarClick(Sender: TObject);
+var
+  senha: string;
+begin
+  senha := SHA1FromString(edt_senhalogin.Text);
 
   if (edt_login.Text = dm.FDQPessoaemail.AsString) and
-    (edt_senhalogin.Text = dm.FDQPessoasenha.AsString) then
+    (senha = dm.FDQPessoasenha.AsString) then
   begin
     if not Assigned(FrmMenu) then
       Application.CreateForm(TFrmMenu, FrmMenu);
@@ -301,6 +348,18 @@ begin
     ShowMessage('Login ou senha não confere');
   end;
 
+end;
+
+procedure TFrmInicial.RectEntrarMouseDown(Sender: TObject; Button: TMouseButton;
+Shift: TShiftState; X, Y: Single);
+begin
+  RectEntrar.Opacity := 0.5;
+end;
+
+procedure TFrmInicial.RectEntrarMouseUp(Sender: TObject; Button: TMouseButton;
+Shift: TShiftState; X, Y: Single);
+begin
+  RectEntrar.Opacity := 1;
 end;
 
 procedure TFrmInicial.RoundRectContratanteClick(Sender: TObject);

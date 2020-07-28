@@ -57,6 +57,15 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
+        <DeployFile Include="img\Star.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>HealthCare\assets\internal\</RemoteDir>
+            <RemoteName>Star.png</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="bd\bd.sqlite" Condition="'$(Config)'=='Release'">
             <RemoteDir>HealthCare\assets\internal\</RemoteDir>
             <RemoteName>bd.sqlite</RemoteName>
@@ -111,11 +120,29 @@
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
         </DeployFile>
+        <DeployFile Include="img\StarHalf.png" Condition="'$(Config)'=='Debug'">
+            <RemoteDir>HealthCare\assets\internal\</RemoteDir>
+            <RemoteName>StarHalf.png</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
         <DeployFile Include="$(BDS)\bin\Artwork\Android\FM_NotificationIcon_36x36.png" Condition="'$(Config)'=='Debug'">
             <RemoteDir>HealthCare\res\drawable-hdpi\</RemoteDir>
             <RemoteName>ic_notification.png</RemoteName>
             <DeployClass>Android_NotificationIcon36</DeployClass>
             <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="img\Star.png" Condition="'$(Config)'=='Release'">
+            <RemoteDir>HealthCare\assets\internal\</RemoteDir>
+            <RemoteName>Star.png</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>
@@ -469,6 +496,15 @@
             <RemoteName>colors.xml</RemoteName>
             <DeployClass>Android_Colors</DeployClass>
             <Operation>1</Operation>
+            <LocalCommand/>
+            <RemoteCommand/>
+            <Overwrite>True</Overwrite>
+        </DeployFile>
+        <DeployFile Include="img\StarHalf.png" Condition="'$(Config)'=='Release'">
+            <RemoteDir>HealthCare\</RemoteDir>
+            <RemoteName>StarHalf.png</RemoteName>
+            <DeployClass>File</DeployClass>
+            <Operation>0</Operation>
             <LocalCommand/>
             <RemoteCommand/>
             <Overwrite>True</Overwrite>

@@ -1,9 +1,6 @@
 ﻿[FDConnection1]
 Coordinates=92,331,90,33
 
-[FDQConfig]
-Coordinates=207,10,68,51
-
 [FDQEspecialidadedescricao]
 Coordinates=105,699,152,33
 
@@ -17,5 +14,5 @@ Coordinates=93,10,104,87
 Coordinates=10,10,73,609
 
 []
-Coordinates=92,227,73,33
+Coordinates=207,10,68,51
 

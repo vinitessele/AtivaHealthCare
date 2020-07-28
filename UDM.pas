@@ -16,7 +16,6 @@ type
   TDM = class(TDataModule)
     FDConnection1: TFDConnection;
     FDQPessoa: TFDQuery;
-    FDQConfig: TFDQuery;
     FDQEspecialidade: TFDQuery;
     FDQEspecialidadeid: TFDAutoIncField;
     FDQEspecialidadedescricao: TStringField;
@@ -75,7 +74,6 @@ type
     FDQPessoasabado: TStringField;
     FDQPessoasabadoHoras: TStringField;
     FDQPessoaemail: TStringField;
-    FDQPessoasenha: TStringField;
     FDQPessoatp_login: TIntegerField;
     FDQPessoaimg_usuario: TBlobField;
     FDQPessoastatus: TStringField;
@@ -85,6 +83,7 @@ type
     FDQPessoaespecialidade: TStringField;
     FDQPessoaendereco: TStringField;
     FDQFavoritoespecialidade: TStringField;
+    FDQPessoasenha: TStringField;
     procedure FDConnection1BeforeConnect(Sender: TObject);
     procedure FDConnection1AfterConnect(Sender: TObject);
   private
@@ -104,14 +103,12 @@ implementation
 procedure TDM.FDConnection1AfterConnect(Sender: TObject);
 var
   strSQL: string;
-  versao: string;
 begin
-  strSQL := EmptyStr;
-  strSQL := //
-    ' create table IF NOT EXISTS config( ' + //
-    ' campo varchar(30),' + //
-    ' valor varchar(30))';
-  FDConnection1.ExecSQL(strSQL);
+    {
+    strSQL := EmptyStr;
+      strSQL := 'drop table pessoa';
+      FDConnection1.ExecSQL(strSQL);
+  }
 
   strSQL := EmptyStr;
   strSQL := //
@@ -156,7 +153,7 @@ begin
     ' sabado char(1),                                ' + //
     ' sabadoHoras varchar(30),                       ' + //
     ' email varchar(60),                             ' + //
-    ' senha varchar(10),                             ' + //
+    ' senha varchar(40),                             ' + //
     ' tp_login integer,                              ' + //
     ' img_usuario blob,                              ' + //
     ' status char(1),                                ' + //
@@ -177,26 +174,6 @@ begin
     ' uf char(2),          ' + //
     ' especialidade varchar(300))';
   FDConnection1.ExecSQL(strSQL);
-
-  FDQConfig.Active := false;
-  FDQConfig.SQL.Clear;
-  FDQConfig.SQL.Add('select * from config where campo = ''versao''  ');
-  FDQConfig.Open();
-  versao := FDQConfig.FieldByName('valor').AsString;
-  // atualiza versao
-  if versao = '1.0' then
-  begin
-    versao := '1.1';
-    // adiciona os campos
-    // DM.FDConnection1.ExecSQL('alter table config add a integer');
-
-    FDQConfig.Active := false;
-    FDQConfig.SQL.Clear;
-    FDQConfig.SQL.Add
-      ('update config set valor =:valor where campo = ''versao''');
-    FDQConfig.ParamByName('valor').Value := versao;
-    FDQConfig.ExecSQL;
-  end;
 
   // ativa todas Fdquerys
   FDQPessoa.Active := true;

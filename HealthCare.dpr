@@ -7,7 +7,8 @@ uses
   USplash in 'USplash.pas' {FrmSplash},
   UDM in 'UDM.pas' {DM: TDataModule},
   UMenu in 'UMenu.pas' {FrmMenu},
-  Loading in 'Loading.pas';
+  Loading in 'Loading.pas',
+  uFormat in 'uFormat.pas';
 
 {$R *.res}
 

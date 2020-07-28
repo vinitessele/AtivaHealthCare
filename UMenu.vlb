@@ -368,9 +368,6 @@ Visible=True
 [LayoutCelular]
 Coordinates=274,1252,94,36
 
-[DM.FDQEspecialidade]
-Coordinates=2625,10,145,146
-
 [LayoutSexo]
 Coordinates=2286,1252,82,36
 
@@ -393,74 +390,14 @@ Coordinates=2098,1184,94,36
 [LabelProfissionais]
 Coordinates=537,1184,120,58
 
-[DM.RESTRequestTipoPessoa]
-Coordinates=835,870,187,102
-
-[DM.RESTRequestEspecialidade]
-Coordinates=1793,870,200,102
-
-[DM.RESTResponsePostPessoa]
-Coordinates=687,10,198,344
-
-[DM.RESTRequestPutPessoa]
-Coordinates=1236,870,182,102
-
-[DM.RESTClientGetPessoaId]
-Coordinates=388,1026,179,80
-
-[DM.RESTResponseGetPessoaCPF]
-Coordinates=895,10,218,344
-
-[DM.RESTClientEspecialidade]
-Coordinates=10,1026,185,80
-
 [RoundProfissionais]
 Coordinates=1241,1184,126,36
-
-[DM.RESTRequestGetPessoaCPF]
-Coordinates=617,870,208,102
-
-[DM.RESTRequestPostPessoa]
-Coordinates=201,870,188,124
-
-[DM.RESTClientGetPessoaCPF]
-Coordinates=2003,870,194,80
-
-[DM.RESTRequestGetPessoaId]
-Coordinates=1032,870,194,102
-
-[DM.FDQFavorito]
-Coordinates=2007,10,111,190
-
-[DM.RESTClientTipoPessoa]
-Coordinates=205,1026,173,80
-
-[DM.RESTResponseGetPessoaId]
-Coordinates=1123,10,204,344
-
-[DM.RESTResponseTipoPessoa]
-Coordinates=1800,10,197,344
-
-[DM.RESTResponsePutPessoa]
-Coordinates=1337,10,191,344
-
-[DM.RESTClientPostPessoa]
-Coordinates=577,1026,173,80
-
-[DM.RESTClientPutPessoa]
-Coordinates=2306,870,167,80
-
-[DM.RESTResponseEspecialidade]
-Coordinates=467,10,210,344
 
 [DM.]
 Coordinates=10,870,181,146
 
 [Layout1]
 Coordinates=1567,1184,60,36
-
-[DM.FDQPessoa]
-Coordinates=10,10,96,850
 
 [VertScrollBoxMeusDados]
 Coordinates=2369,1184,100,36
